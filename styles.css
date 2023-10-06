@@ -1,0 +1,105 @@
+body, h1, h2, ul {
+	margin: 0;
+	padding: 0;
+}
+
+/* Center the container both horizontally and vertically */
+.center-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+}
+
+/* Style the search box */
+.search-box {
+	text-align: center;
+}
+
+h1 {
+	font-size: 24px;
+	margin-bottom: 20px;
+}
+
+#search-input {
+	padding: 10px;
+	width: 60%;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 16px;
+	margin-bottom: 10px;
+}
+
+#search-button {
+	padding: 10px 20px;
+	background-color: #0099ff;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+/* Add styling for the top bar */
+.top-bar {
+	background-color: #0099ff; /* Background color for the top bar */
+	color: #fff; /* Text color */
+	padding: 10px 0; /* Add padding to top and bottom */
+	text-align: center;
+}
+
+/* Style the user information container within the top bar */
+.user-info {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	max-width: 800px; /* Adjust the maximum width as needed */
+	margin: 0 auto; /* Center the top bar horizontally */
+}
+
+/* Style the user greeting */
+#logged-in-user {
+	font-size: 16px;
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+/* Style the user profile image within the top bar */
+#user-profile-image img {
+	border-radius: 50%;
+	max-width: 30px; /* Adjust the image size as needed */
+}
+
+.category-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px; /* Adjust the spacing between pills */
+	justify-content: center;
+	align-items: center;
+}
+
+.category-pills span {
+	display: inline-block;
+	padding: 8px 12px;
+	background-color: #0099ff;
+	color: #fff;
+	border-radius: 20px; /* Rounded corners for pills */
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.category-pills span:hover {
+	background-color: #0077cc;
+}
+
+#content {
+	max-height: 400px; /* Adjust the maximum height as needed */
+	overflow-y: auto; /* Enable vertical scrolling if content exceeds the maximum height */
+	padding: 10px; /* Add padding to the content area */
+}
+
+.table tbody tr {
+	margin-bottom: 20px; /* Adjust the spacing between table rows */
+}
