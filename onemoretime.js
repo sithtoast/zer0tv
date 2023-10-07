@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:63488`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:52152`;
 
 
 // Twitch API Endpoints
@@ -283,6 +283,7 @@ function streams10OrLess(streams) {
 						<th>Streamer</th>
 						<th>Title</th>
 						<th>Game</th>
+						<th>Mature</th>
 						<th>Viewers</th>
 						<th>Started</th> <!-- New column for stream start time -->
 					</tr>
@@ -300,6 +301,7 @@ function streams10OrLess(streams) {
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
+				<td>${stream.is_mature}</td>
 				<td>${stream.viewer_count}</td>
 				<td>${formattedTime}</td>
 				`;

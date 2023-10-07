@@ -65,12 +65,6 @@ h1 {
 	margin-right: 10px;
 }
 
-/* Style the user profile image within the top bar */
-#profile-image img {
-	border-radius: 50%;
-	max-width: 75px; /* Adjust the image size as needed */
-}
-
 .category-pills {
 	display: flex;
 	flex-wrap: wrap;
@@ -95,7 +89,7 @@ h1 {
 }
 
 #content {
-	max-height: 400px; /* Adjust the maximum height as needed */
+	max-height: 750px; /* Adjust the maximum height as needed */
 	overflow-y: auto; /* Enable vertical scrolling if content exceeds the maximum height */
 	padding: 10px; /* Add padding to the content area */
 }
