@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-//const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:63488`;
+const REDIRECT_URI = 'https://zer0.tv';
+//const REDIRECT_URI = `http://localhost:63488`;
 
 
 // Twitch API Endpoints
@@ -80,9 +80,6 @@ if (accessToken) {
 	updateTopBar(false);
 }
 
-// ... (rest of your JavaScript code)
-
-
 // Function to fetch and display the logged-in user's details and profile image
 async function fetchUserDetails(accessToken) {
 	try {
@@ -99,7 +96,7 @@ async function fetchUserDetails(accessToken) {
 
 			if (user) {
 				// Display the logged-in user's login information
-				userLogin.textContent = `Logged in as: ${user.login}`;
+				userLogin.textContent = `Welcome, ${user.login}`;
 				// Show user information
 				userInfo.style.display = 'block';
 
