@@ -287,7 +287,7 @@ function isMature(streams) {
 	const ratedE = 'E';
 
 	streams.forEach((stream) => {
-		if (stream.is_mature === TRUE) {
+		if (stream.is_mature === 'TRUE') {
 			stream.is_mature = ratedM;
 		} else { stream.is_mature = ratedE; }
 	}); 
