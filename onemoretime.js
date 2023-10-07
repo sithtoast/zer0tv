@@ -82,6 +82,7 @@ if (accessToken) {
 	// Fetch streams on initial load
 	fetchStreams();
 	streams10OrLess();
+	hideCatCloud();
 } else {
 	// User is not authenticated
 	updateTopBar(false);
