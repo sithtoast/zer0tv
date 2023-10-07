@@ -280,12 +280,26 @@ function fetchStreams(categoryId, categoryName) {
 	fetchStreamsRecursive(apiUrl);
 	console.log(streamArray);
 }
+
+function isMature(streams) {
+	
+	const ratedM = M;
+	const ratedE = E;
+
+	streams.forEach((stream) => {
+		if (stream.is_mature === TRUE) {
+			stream.is_mature = ratedM;
+		} else { stream.is_mature = ratedE; }
+	}); 
+}
+
 			// Filter streams with fewer than 10 viewers
 function streams10OrLess(streams) {
 			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 
 			if (filteredStreams.length > 0) {
-			// Display filtered streams in a table
+			isMature(filteredStreams);
+				// Display filtered streams in a table
 			const table = document.createElement('table');
 			table.classList.add('table', 'table-striped', 'table-hover');
 			table.innerHTML = `
