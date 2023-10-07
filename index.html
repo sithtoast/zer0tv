@@ -20,6 +20,9 @@
 					<div>
 						<p class="font-weight-bold mb-1" id="logged-in-user"></p>
 						<p class="mb-0" id="user-login"></p>
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+							What?
+						</button>
 					</div>
 				</div>
 			</div>
@@ -27,6 +30,7 @@
 
 		<!-- Login button -->
 		<button id="login-button" class="btn btn-light">Log In</button>
+
 	</div>
 </div>
 <div class="container mt-4">
@@ -54,6 +58,36 @@
 	<!-- Add these elements inside the <body> tag -->
 
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">What is this and how do I use it?</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <p>zer0.tv aims to put the spotlight on smalltime streamers that have 4 or fewer viewers. Make their day!
+					<br>
+					<h2>How do I use it?</h2>
+					Login, search for your game, click the stream you want, ????, profit.
+				</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 	<script src="onemoretime.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
