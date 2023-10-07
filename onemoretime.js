@@ -49,9 +49,6 @@ function updateTopBar(loggedIn) {
 	if (loggedIn) {
 		// User is logged in
 		loginButton.style.display = 'none';
-		userInfo.style.display = 'block';
-		userLogin.textContent = 'Logged in';
-		userLogin.style.display = 'block';
 
 		// Fetch and display user details
 		fetchUserDetails(accessToken);
@@ -131,7 +128,6 @@ async function fetchUserProfileImage(userId, accessToken) {
 			if (user && user[0] && user[0].profile_image_url) {
 				// Display the user's profile image
 				userProfileImage.src = user[0].profile_image_url;
-				userProfileImage.style.display = 'block';
 			}
 		}
 	} catch (error) {
