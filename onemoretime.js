@@ -155,7 +155,8 @@ async function fetchCategories() {
 		if (response.ok) {
 			const data = await response.json();
 			const categories = data.data;
-
+			
+			content.textContent = 'Top 50 Categories';
 			categories.forEach((category) => {
 				const listItem = document.createElement('span');
 				listItem.classList.add('badge', 'badge-primary', 'mr-2');
@@ -167,7 +168,7 @@ async function fetchCategories() {
 				categoryList.appendChild(listItem);
 			});
 		} else {
-			content.textContent = 'Error fetching categories.';
+			content.textContent = 'Error fetching categories. Try logging in?';
 		}
 	} catch (error) {
 		console.error(error);
@@ -193,7 +194,7 @@ async function searchCategories(categoryName) {
 			if (categories.length > 0) {
 				// Clear the existing category search results
 				categorySearchResultList.innerHTML = '';
-
+				categorySearchResultList.textContent = 'Search Results';
 				categories.forEach((category) => {
 					const listItem = document.createElement('span');
 					listItem.classList.add('badge', 'badge-primary', 'mr-2');
