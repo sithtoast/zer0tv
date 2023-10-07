@@ -1,6 +1,8 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:63488`;
+
 
 // Twitch API Endpoints
 const TWITCH_API_BASE_URL = 'https://api.twitch.tv/helix';
@@ -72,6 +74,7 @@ if (accessToken) {
 	fetchCategories();
 	// Fetch streams on initial load
 	fetchStreams();
+	streams10OrLess();
 } else {
 	// User is not authenticated
 	updateTopBar(false);
@@ -174,6 +177,7 @@ async function fetchCategories() {
 
 // Function to search for Twitch categories by name
 async function searchCategories(categoryName) {
+
 	try {
 		const response = await fetch(`${SEARCH_CATEGORIES_URL}?query=${encodeURIComponent(categoryName)}`, {
 			headers: {
@@ -234,22 +238,46 @@ function formatTimeDifference(startedAt) {
 }
 
 // Function to fetch and display Twitch streams within a category with fewer than 10 viewers
-async function fetchStreams(categoryId, categoryName) {
-	try {
-		const response = await fetch(`${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`, {
-			headers: {
-				'Client-ID': CLIENT_ID,
-				'Authorization': `Bearer ${accessToken}`,
+function fetchStreams(categoryId, categoryName) {
+	
+	const MAX_STREAMS = 1000;
+	const streamArray = [];
+	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
+	
+	const headers = {
+		'Client-ID': CLIENT_ID,
+		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
+	};
+	
+	function fetchStreamsRecursive(url) {
+		$.ajax({
+			url,
+			method: 'GET',
+			headers,
+			success: (response) => {
+				const streams = response.data;
+				streamArray.push(...streams);
+	
+				if (streamArray.length < MAX_STREAMS && response.pagination && response.pagination.cursor) {
+					// Continue fetching streams if not reached the limit
+					fetchStreamsRecursive(`${apiUrl}&after=${response.pagination.cursor}`);
+				} else {
+					// Display the streams in the table
+					console.log(streamArray);
+					streams10OrLess(streamArray);
+				}
 			},
+			error: (error) => {
+				console.error(error);
+			}
 		});
-
-		if (response.ok) {
-			const data = await response.json();
-			const streams = data.data;
-			console.log(data.data)
-
+	}
+	fetchStreamsRecursive(apiUrl);
+	console.log(streamArray);
+}
 			// Filter streams with fewer than 10 viewers
-			const filteredStreams = streams.filter((stream) => stream.viewer_count < 11);
+function streams10OrLess(streams) {
+			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 
 			if (filteredStreams.length > 0) {
 			// Display filtered streams in a table
@@ -270,30 +298,23 @@ async function fetchStreams(categoryId, categoryName) {
 			`;
 
 
-				filteredStreams.forEach((stream) => {
-									const row = document.createElement('tr');
-									const formattedTime = formatTimeDifference(stream.started_at);
-									row.innerHTML = `
-										<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-										<td>${stream.title}</td>
-										<td>${categoryName}</td>
-										<td>${stream.viewer_count}</td>
-										<td>${formattedTime}</td>
-									`;
-									table.querySelector('tbody').appendChild(row);
-								});
+			filteredStreams.forEach((stream) => {
+				const row = document.createElement('tr');
+				const formattedTime = formatTimeDifference(stream.started_at);
+				row.innerHTML = `
+				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
+				<td>${stream.title}</td>
+				<td>${stream.game_name}</td>
+				<td>${stream.viewer_count}</td>
+				<td>${formattedTime}</td>
+				`;
+				table.querySelector('tbody').appendChild(row);
+				});
 				
 								// Replace the content with the table
 								content.innerHTML = '';
 								content.appendChild(table);
 							} else {
-								content.textContent = `No streams found in the "${categoryName}" category with fewer than 10 viewers or the top 100 streams have 10+ viewers.`;
+								content.textContent = `No streams found.`;
 							}
-						} else {
-							content.textContent = 'Error fetching streams.';
 						}
-					} catch (error) {
-						console.error(error);
-						content.textContent = 'An error occurred.';
-					}
-				}
