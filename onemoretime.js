@@ -25,7 +25,7 @@ const userLogin = document.getElementById('user-login'); // Add an element to di
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
 function hideCatCloud() {
-	if (content.innerHTML.trim() !== '') {
+	if (content.innerHTML.content() !== '') {
 		categoryList.style.display = 'none';
 	} else {
 		categoryList.style.display = 'block';
