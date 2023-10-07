@@ -282,6 +282,7 @@ function streams10OrLess(streams) {
 			if (filteredStreams.length > 0) {
 			// Display filtered streams in a table
 			const table = document.createElement('table');
+			table.classList.add('table', 'table-striped', 'table-hover');
 			table.innerHTML = `
 				<thead>
 					<tr>
