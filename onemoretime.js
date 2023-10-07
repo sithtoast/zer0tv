@@ -153,7 +153,7 @@ async function fetchCategories() {
 			const data = await response.json();
 			const categories = data.data;
 			
-			content.textContent = 'Top 50 Categories';
+
 			categories.forEach((category) => {
 				const listItem = document.createElement('span');
 				listItem.classList.add('badge', 'badge-primary', 'mr-2');
