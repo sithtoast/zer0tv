@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:52152`;
+const REDIRECT_URI = `http://localhost:56288`;
 
 
 // Twitch API Endpoints
@@ -268,7 +268,6 @@ function fetchStreams(categoryId, categoryName) {
 					fetchStreamsRecursive(`${apiUrl}&after=${response.pagination.cursor}`);
 				} else {
 					// Display the streams in the table
-					console.log(streamArray);
 					streams10OrLess(streamArray);
 				}
 			},
@@ -282,10 +281,10 @@ function fetchStreams(categoryId, categoryName) {
 }
 
 function isMature(streams) {
-	
+	console.log(streams);
 	const findTrue = true;
-	const ratedM = 'M';
-	const ratedE = 'E';
+	const ratedM = '<img src=img/ratedm.png alt="M">';
+	const ratedE = '<img src=img/ratede.png alt="E">';
 
 	streams.forEach((stream) => {
 		if (stream.is_mature === findTrue) {
