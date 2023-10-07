@@ -120,7 +120,7 @@ async function fetchUserDetails(accessToken) {
 // Function to fetch and display the user's profile image
 async function fetchUserProfileImage(userId, accessToken) {
 	try {
-		const response = await fetch(`${TWITCH_API_BASE_URL}/users/${userId}`, {
+		const response = await fetch(`${TWITCH_API_BASE_URL}/users?id=${userId}`, {
 			headers: {
 				'Client-ID': CLIENT_ID,
 				'Authorization': `Bearer ${accessToken}`,
