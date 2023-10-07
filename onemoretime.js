@@ -24,6 +24,14 @@ const userInfo = document.getElementById('user-info'); // Add an element for use
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
+function hideCatCloud() {
+	if content.innerHTML.trim() !== '' {
+		categoryList.style.display = 'none';
+	} else {
+		categoryList.style.display = 'block';
+	}
+}
+
 
 // Event listener for the login button
 loginButton.addEventListener('click', () => {
@@ -37,6 +45,8 @@ searchButton.addEventListener('click', () => {
 		searchCategories(searchText);
 	}
 });
+
+content.addEventListener('input', hideCatCloud);
 
 // ... (previous JavaScript code)
 
