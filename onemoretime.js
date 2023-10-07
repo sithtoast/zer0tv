@@ -283,11 +283,12 @@ function fetchStreams(categoryId, categoryName) {
 
 function isMature(streams) {
 	
+	const findTrue = true;
 	const ratedM = 'M';
 	const ratedE = 'E';
 
 	streams.forEach((stream) => {
-		if (stream.is_mature === 'true') {
+		if (stream.is_mature === findTrue) {
 			stream.is_mature = ratedM;
 		} else { stream.is_mature = ratedE; }
 	}); 
