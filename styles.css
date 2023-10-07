@@ -66,9 +66,9 @@ h1 {
 }
 
 /* Style the user profile image within the top bar */
-#user-profile-image img {
+#profile-image img {
 	border-radius: 50%;
-	max-width: 30px; /* Adjust the image size as needed */
+	max-width: 75px; /* Adjust the image size as needed */
 }
 
 .category-pills {
