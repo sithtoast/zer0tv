@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:56288`;
+const REDIRECT_URI = `http://localhost:64142`;
 
 
 // Twitch API Endpoints
@@ -24,13 +24,7 @@ const userInfo = document.getElementById('user-info'); // Add an element for use
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
-function hideCatCloud() {
-	if (content.innerHTML.content() !== '') {
-		categoryList.style.display = 'none';
-	} else {
-		categoryList.style.display = 'block';
-	}
-}
+const streamArray = [];
 
 
 // Event listener for the login button
@@ -46,9 +40,6 @@ searchButton.addEventListener('click', () => {
 	}
 });
 
-content.addEventListener('input', hideCatCloud);
-
-// ... (previous JavaScript code)
 
 // Function to update the top bar based on login status
 function updateTopBar(loggedIn) {
@@ -120,6 +111,42 @@ async function fetchUserDetails(accessToken) {
 		console.error(error);
 		userLogin.textContent = 'An error occurred while fetching user details.';
 	}
+}
+
+async function fetchMoreUserDetails(userId) {
+	
+	try {
+	const response = await fetch(`${TWITCH_API_BASE_URL}/users?id=${userId}`, {
+		headers: {
+			'Client-ID': CLIENT_ID,
+			'Authorization': `Bearer ${accessToken}`,
+		},
+	});
+	
+		if (response.ok) {
+			const data = await response.json();
+			const user = data.data;
+	
+			if (user && user[0] && user[0].broadcaster_type) {
+				// Display the user's profile image
+				addPropertyToArray(streamArray, 'broadcaster_type', user[0].broadcaster_type);
+			}
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+function addPropertyToArray(jsonArray, propertyName, propertyValue) {
+  // Iterate through the JSON array
+  for (let i = 0; i < jsonArray.length; i++) {
+	// Check if the current element is an object
+	if (typeof jsonArray[i] === 'object') {
+	  // Add the new property to the object
+	  jsonArray[i][propertyName] = propertyValue;
+	}
+  }
+  return jsonArray;
 }
 
 // Function to fetch and display the user's profile image
@@ -246,7 +273,7 @@ function formatTimeDifference(startedAt) {
 function fetchStreams(categoryId, categoryName) {
 	
 	const MAX_STREAMS = 1000;
-	const streamArray = [];
+	
 	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
 	
 	const headers = {
@@ -295,6 +322,7 @@ function isMature(streams) {
 
 			// Filter streams with fewer than 10 viewers
 function streams10OrLess(streams) {
+			
 			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 
 			if (filteredStreams.length > 0) {
@@ -306,6 +334,7 @@ function streams10OrLess(streams) {
 				<thead>
 					<tr>
 						<th>Streamer</th>
+						<th>Type</th>
 						<th>Title</th>
 						<th>Game</th>
 						<th>Mature</th>
@@ -322,8 +351,10 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
+				const broadcasterStatus = fetchMoreUserDetails(stream.user_id);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
+				<td>${broadcasterStatus}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
