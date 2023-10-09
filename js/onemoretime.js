@@ -323,6 +323,7 @@ function isMature(streams) {
 			
 function fetchUserDeets(streams) {
 	
+	const userDetail = "";
 	const headers = {
 		'Client-ID': CLIENT_ID,
 		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
@@ -337,10 +338,9 @@ function fetchUserDeets(streams) {
 		headers,
 		success: (response) => {
 			const userDeets = response.data;
-			console.log(userDeets);
-			console.log(userDeets[0].broadcaster_type);
-			const userStatus = userDeets[0].broadcaster_type;
-			addPropertyToArray(streams[i], 'broadcaster_type', userDeets[0].broadcaster_type);
+			const userDetail = userDeets[0].broadcaster_type;
+			console.log(userDetail);
+			streams[i].broadcaster_type = userDeets[0].broadcaster_type;
 		},
 		error: (error) => {
 			
@@ -380,10 +380,9 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
-				const broadcasterStatus = fetchMoreUserDetails(stream.user_id);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-				<td>${stream.broadcaster_status}</td>
+				<td>${stream.broadcaster_type}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
