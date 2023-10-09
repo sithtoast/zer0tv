@@ -219,7 +219,15 @@ function formatTimeDifference(startedAt) {
 	// Calculate minutes and hours
 	const minutes = Math.floor(timeDifferenceInMilliseconds / (1000 * 60));
 	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+	const years = Math.floor(days / 365.25);
 
+	if years > 0) {
+		return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+	} else {
+		return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+	}
+	
 	if (hours > 0) {
 		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
 	} else {
@@ -338,6 +346,7 @@ function streams10OrLess(streams) {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
 				const joined = formatTimeDifference(stream.created_at);
+				console.log(joined);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
 				<td>${stream.broadcaster_type}</td>
