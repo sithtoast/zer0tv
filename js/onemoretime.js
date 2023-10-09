@@ -72,7 +72,6 @@ if (accessToken) {
 	// Fetch streams on initial load
 	fetchStreams();
 	streams10OrLess();
-	hideCatCloud();
 } else {
 	// User is not authenticated
 	updateTopBar(false);
@@ -110,42 +109,6 @@ async function fetchUserDetails(accessToken) {
 		console.error(error);
 		userLogin.textContent = 'An error occurred while fetching user details.';
 	}
-}
-
-async function fetchMoreUserDetails(userID) {
-	
-		try {
-		const response = await fetch(`${TWITCH_API_BASE_URL}/users?id=${userID}`, {
-			headers: {
-				'Client-ID': CLIENT_ID,
-				'Authorization': `Bearer ${accessToken}`,
-			},
-		});
-		
-			if (response.ok) {
-				const data = await response.json();
-				const user = data.data;
-		
-				if (user && user[0] && user[0].broadcaster_type) {
-					// Display the user's profile image
-					addPropertyToArray(streamArray, 'broadcaster_type', user.broadcaster_type);
-				}
-			}
-		} catch (error) {
-			console.error(error);
-		}
-}
-
-function addPropertyToArray(jsonArray, propertyName, propertyValue) {
-  // Iterate through the JSON array
-  for (let i = 0; i < jsonArray.length; i++) {
-	// Check if the current element is an object
-	if (typeof jsonArray[i] === 'object') {
-	  // Add the new property to the object
-	  jsonArray[i][propertyName] = propertyValue;
-	}
-  }
-  return jsonArray;
 }
 
 // Function to fetch and display the user's profile image
@@ -339,6 +302,7 @@ function fetchUserDeets(streams) {
 		success: (response) => {
 			const userDeets = response.data;
 			const userDetail = userDeets[0].broadcaster_type;
+			
 			console.log(userDetail);
 			streams[i].broadcaster_type = userDeets[0].broadcaster_type;
 		},
