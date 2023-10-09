@@ -221,12 +221,6 @@ function formatTimeDifference(startedAt) {
 	const hours = Math.floor(minutes / 60);
 	const days = Math.floor(hours / 24);
 	const years = Math.floor(days / 365.25);
-
-	if (years > 0) {
-		return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-	} else {
-		return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-	}
 	
 	if (hours > 0) {
 		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
@@ -345,6 +339,8 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
+				const joinedRaw = stream.joined_at;
+				console.log(joinedRaw);
 				const joined = formatTimeDifference(stream.created_at);
 				console.log(joined);
 				row.innerHTML = `
