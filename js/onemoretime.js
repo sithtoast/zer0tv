@@ -24,7 +24,6 @@ const userInfo = document.getElementById('user-info'); // Add an element for use
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
-const streamArray = [];
 
 // Event listener for the login button
 loginButton.addEventListener('click', () => {
@@ -235,7 +234,7 @@ function formatTimeDifference(startedAt) {
 function fetchStreams(categoryId, categoryName) {
 	
 	const MAX_STREAMS = 1000;
-	
+	const streamArray = [];
 	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
 	
 	const headers = {
@@ -250,14 +249,14 @@ function fetchStreams(categoryId, categoryName) {
 			headers,
 			success: (response) => {
 				const streams = response.data;
-				fetchUserDeets(streams);
 				streamArray.push(...streams);
 				if (streamArray.length < MAX_STREAMS && response.pagination && response.pagination.cursor) {
 					// Continue fetching streams if not reached the limit
 					fetchStreamsRecursive(`${apiUrl}&after=${response.pagination.cursor}`);
 				} else {
 					// Display the streams in the table
-					streams10OrLess(streamArray);
+					fetchUserDeets(streamArray);
+					
 				}
 			},
 			error: (error) => {
@@ -265,7 +264,6 @@ function fetchStreams(categoryId, categoryName) {
 			}
 		});
 	}
-	
 	fetchStreamsRecursive(apiUrl);
 	console.log(streamArray);
 }
@@ -283,7 +281,7 @@ function isMature(streams) {
 	}); 
 }
 
-			
+		
 function fetchUserDeets(streams) {
 	
 	const userDetail = "";
@@ -301,23 +299,24 @@ function fetchUserDeets(streams) {
 		headers,
 		success: (response) => {
 			const userDeets = response.data;
+			console.log(userDeets);
 			const userDetail = userDeets[0].broadcaster_type;
-			
-			console.log(userDetail);
-			streams[i].broadcaster_type = userDeets[0].broadcaster_type;
+			const userJoin = userDeets[0].created_at;
+			streams[i].broadcaster_type = userDetail;
+			streams[i].created_at = userJoin;
 		},
 		error: (error) => {
-			
 			console.log(error);
 		}
-		});	
+		});
 	}
+	streams10OrLess(streams);
 }
 			// Filter streams with fewer than 10 viewers
 function streams10OrLess(streams) {
 			
 			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
-
+			console.log(filteredStreams);
 			if (filteredStreams.length > 0) {
 			isMature(filteredStreams);
 				// Display filtered streams in a table
@@ -328,6 +327,7 @@ function streams10OrLess(streams) {
 					<tr>
 						<th>Streamer</th>
 						<th>Type</th>
+						<th>Age</th>
 						<th>Title</th>
 						<th>Game</th>
 						<th>Mature</th>
@@ -344,9 +344,12 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
+				const joined = formatTimeDifference(stream.created_at);
+				console.log(joined);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
 				<td>${stream.broadcaster_type}</td>
+				<td>${joined}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
