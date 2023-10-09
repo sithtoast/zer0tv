@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-//const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:59349`;
+const REDIRECT_URI = 'https://zer0.tv';
+//const REDIRECT_URI = `http://localhost:59349`;
 
 
 // Twitch API Endpoints
@@ -68,9 +68,6 @@ if (accessToken) {
 	updateTopBar(true);
 	// Fetch and display categories
 	fetchCategories();
-	// Fetch streams on initial load
-	fetchStreams();
-	streams10OrLess();
 } else {
 	// User is not authenticated
 	updateTopBar(false);
@@ -265,11 +262,9 @@ function fetchStreams(categoryId, categoryName) {
 		});
 	}
 	fetchStreamsRecursive(apiUrl);
-	console.log(streamArray);
 }
 
 function isMature(streams) {
-	console.log(streams);
 	const findTrue = true;
 	const ratedM = '<img src=img/ratedm.png alt="M">';
 	const ratedE = '<img src=img/ratede.png alt="E">';
@@ -298,7 +293,6 @@ function fetchUserDeets(streams) {
 		headers,
 		success: (response) => {
 			const userDeets = response.data;
-			console.log(userDeets);
 			const userDetail = userDeets[0].broadcaster_type;
 			const userJoin = userDeets[0].created_at;
 			streams[i].broadcaster_type = userDetail;
@@ -344,7 +338,6 @@ function streams10OrLess(streams) {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
 				const joined = formatTimeDifference(stream.created_at);
-				console.log(joined);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
 				<td>${stream.broadcaster_type}</td>
