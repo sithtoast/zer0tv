@@ -222,7 +222,7 @@ function formatTimeDifference(startedAt) {
 	const days = Math.floor(hours / 24);
 	const years = Math.floor(days / 365.25);
 
-	if years > 0) {
+	if (years > 0) {
 		return `${years} ${years === 1 ? 'year' : 'years'} ago`;
 	} else {
 		return `${days} ${days === 1 ? 'day' : 'days'} ago`;
