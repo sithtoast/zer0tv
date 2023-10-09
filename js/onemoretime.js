@@ -339,9 +339,9 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
-				const joinedRaw = stream.joined_at;
+				const joinedRaw = stream.created_at;
 				console.log(joinedRaw);
-				const joined = formatTimeDifference(stream.created_at);
+				const joined = formatTimeDifference(joinedRaw);
 				console.log(joined);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
