@@ -284,7 +284,6 @@ function isMature(streams) {
 		
 function fetchUserDeets(streams) {
 	
-	const userDetail = "";
 	const headers = {
 		'Client-ID': CLIENT_ID,
 		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
