@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:59349`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:49342`;
 
 
 // Twitch API Endpoints
@@ -219,9 +219,29 @@ function formatTimeDifference(startedAt) {
 	// Calculate minutes and hours
 	const minutes = Math.floor(timeDifferenceInMilliseconds / (1000 * 60));
 	const hours = Math.floor(minutes / 60);
+	
+	if (hours > 0) {
+		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+	} else {
+		return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+	}
+}
+
+function reallyLongTimeAgo(created_at) {
+	const createdDate = new Date(created_at);
+	const currentTime = new Date();
+	const timeDifference = currentTime - createdDate;
+	
+	const minutes = Math.floor(timeDifference / (1000 * 60));
+	const hours = Math.floor(minutes / 60);
 	const days = Math.floor(hours / 24);
 	const years = Math.floor(days / 365.25);
 	
+	if (years > 0) {
+		return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+	} else {
+		return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+	}
 	if (hours > 0) {
 		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
 	} else {
@@ -286,32 +306,34 @@ function fetchUserDeets(streams) {
 		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
 	};
 	
+	let promises = [];
 	for (let i = 0; i < streams.length; i++) {
 		const url = `${TWITCH_API_BASE_URL}/users?id=${streams[i].user_id}`;
 		// Check if the current element is an object
-		$.ajax({
+		const promise = $.ajax({
 		url,
 		method: 'GET',
 		headers,
 		success: (response) => {
 			const userDeets = response.data;
 			const userDetail = userDeets[0].broadcaster_type;
-			const userJoin = userDeets[0].created_at;
-			streams[i].broadcaster_type = userDetail;
-			streams[i].created_at = userJoin;
+			const userJoin = reallyLongTimeAgo(userDeets[0].created_at);
+			streams[i].bcaster_type = userDetail;
+			streams[i].account_created = userJoin;
 		},
 		error: (error) => {
 			console.log(error);
 		}
 		});
+		promises.push(promise);
 	}
-	streams10OrLess(streams);
+	$.when.apply($, promises).done(() => { streams10OrLess(streams); });
 }
 			// Filter streams with fewer than 10 viewers
 function streams10OrLess(streams) {
 			
+			console.log(streams);
 			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
-			console.log(filteredStreams);
 			if (filteredStreams.length > 0) {
 			isMature(filteredStreams);
 				// Display filtered streams in a table
@@ -339,14 +361,10 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
-				const joinedRaw = stream.created_at;
-				console.log(joinedRaw);
-				const joined = formatTimeDifference(joinedRaw);
-				console.log(joined);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-				<td>${stream.broadcaster_type}</td>
-				<td>${joined}</td>
+				<td>${stream.bcaster_type}</td>
+				<td>${stream.account_created}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
