@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:64142`;
+const REDIRECT_URI = `http://localhost:49342`;
 
 
 // Twitch API Endpoints
@@ -23,8 +23,6 @@ const loggedInUser = document.getElementById('logged-in-user'); // Add an elemen
 const userInfo = document.getElementById('user-info'); // Add an element for user information
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
-
-const streamArray = [];
 
 
 // Event listener for the login button
@@ -70,10 +68,6 @@ if (accessToken) {
 	updateTopBar(true);
 	// Fetch and display categories
 	fetchCategories();
-	// Fetch streams on initial load
-	fetchStreams();
-	streams10OrLess();
-	hideCatCloud();
 } else {
 	// User is not authenticated
 	updateTopBar(false);
@@ -111,42 +105,6 @@ async function fetchUserDetails(accessToken) {
 		console.error(error);
 		userLogin.textContent = 'An error occurred while fetching user details.';
 	}
-}
-
-async function fetchMoreUserDetails(userId) {
-	
-	try {
-	const response = await fetch(`${TWITCH_API_BASE_URL}/users?id=${userId}`, {
-		headers: {
-			'Client-ID': CLIENT_ID,
-			'Authorization': `Bearer ${accessToken}`,
-		},
-	});
-	
-		if (response.ok) {
-			const data = await response.json();
-			const user = data.data;
-	
-			if (user && user[0] && user[0].broadcaster_type) {
-				// Display the user's profile image
-				addPropertyToArray(streamArray, 'broadcaster_type', user[0].broadcaster_type);
-			}
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-function addPropertyToArray(jsonArray, propertyName, propertyValue) {
-  // Iterate through the JSON array
-  for (let i = 0; i < jsonArray.length; i++) {
-	// Check if the current element is an object
-	if (typeof jsonArray[i] === 'object') {
-	  // Add the new property to the object
-	  jsonArray[i][propertyName] = propertyValue;
-	}
-  }
-  return jsonArray;
 }
 
 // Function to fetch and display the user's profile image
@@ -261,7 +219,29 @@ function formatTimeDifference(startedAt) {
 	// Calculate minutes and hours
 	const minutes = Math.floor(timeDifferenceInMilliseconds / (1000 * 60));
 	const hours = Math.floor(minutes / 60);
+	
+	if (hours > 0) {
+		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+	} else {
+		return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+	}
+}
 
+function reallyLongTimeAgo(created_at) {
+	const createdDate = new Date(created_at);
+	const currentTime = new Date();
+	const timeDifference = currentTime - createdDate;
+	
+	const minutes = Math.floor(timeDifference / (1000 * 60));
+	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+	const years = Math.floor(days / 365.25);
+	
+	if (years > 0) {
+		return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+	} else {
+		return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+	}
 	if (hours > 0) {
 		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
 	} else {
@@ -273,7 +253,7 @@ function formatTimeDifference(startedAt) {
 function fetchStreams(categoryId, categoryName) {
 	
 	const MAX_STREAMS = 1000;
-	
+	const streamArray = [];
 	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
 	
 	const headers = {
@@ -289,13 +269,13 @@ function fetchStreams(categoryId, categoryName) {
 			success: (response) => {
 				const streams = response.data;
 				streamArray.push(...streams);
-	
 				if (streamArray.length < MAX_STREAMS && response.pagination && response.pagination.cursor) {
 					// Continue fetching streams if not reached the limit
 					fetchStreamsRecursive(`${apiUrl}&after=${response.pagination.cursor}`);
 				} else {
 					// Display the streams in the table
-					streams10OrLess(streamArray);
+					fetchUserDeets(streamArray);
+					
 				}
 			},
 			error: (error) => {
@@ -304,11 +284,9 @@ function fetchStreams(categoryId, categoryName) {
 		});
 	}
 	fetchStreamsRecursive(apiUrl);
-	console.log(streamArray);
 }
 
 function isMature(streams) {
-	console.log(streams);
 	const findTrue = true;
 	const ratedM = '<img src=img/ratedm.png alt="M">';
 	const ratedE = '<img src=img/ratede.png alt="E">';
@@ -320,11 +298,42 @@ function isMature(streams) {
 	}); 
 }
 
+		
+function fetchUserDeets(streams) {
+	
+	const headers = {
+		'Client-ID': CLIENT_ID,
+		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
+	};
+	
+	let promises = [];
+	for (let i = 0; i < streams.length; i++) {
+		const url = `${TWITCH_API_BASE_URL}/users?id=${streams[i].user_id}`;
+		// Check if the current element is an object
+		const promise = $.ajax({
+		url,
+		method: 'GET',
+		headers,
+		success: (response) => {
+			const userDeets = response.data;
+			const userDetail = userDeets[0].broadcaster_type;
+			const userJoin = reallyLongTimeAgo(userDeets[0].created_at);
+			streams[i].bcaster_type = userDetail;
+			streams[i].account_created = userJoin;
+		},
+		error: (error) => {
+			console.log(error);
+		}
+		});
+		promises.push(promise);
+	}
+	$.when.apply($, promises).done(() => { streams10OrLess(streams); });
+}
 			// Filter streams with fewer than 10 viewers
 function streams10OrLess(streams) {
 			
+			console.log(streams);
 			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
-
 			if (filteredStreams.length > 0) {
 			isMature(filteredStreams);
 				// Display filtered streams in a table
@@ -335,6 +344,7 @@ function streams10OrLess(streams) {
 					<tr>
 						<th>Streamer</th>
 						<th>Type</th>
+						<th>Age</th>
 						<th>Title</th>
 						<th>Game</th>
 						<th>Mature</th>
@@ -351,10 +361,10 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
-				const broadcasterStatus = fetchMoreUserDetails(stream.user_id);
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-				<td>${broadcasterStatus}</td>
+				<td>${stream.bcaster_type}</td>
+				<td>${stream.account_created}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
