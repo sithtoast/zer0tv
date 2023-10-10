@@ -316,8 +316,16 @@ function fetchUserDeets(streams) {
 		headers,
 		success: (response) => {
 			const userDeets = response.data;
-			const userDetail = userDeets[0].broadcaster_type;
+			let userDetail = userDeets[0].broadcaster_type;
 			const userJoin = reallyLongTimeAgo(userDeets[0].created_at);
+			const partnerIcon = '<img src=img/partner.png alt="partner">';
+			const affiliateIcon = '<img src=img/twitch.png alt=affiliate>';
+			if (userDetail === "partner") {
+				userDetail = partnerIcon;
+			}
+			if (userDetail === "affiliate") {
+				userDetail = affiliateIcon;
+			}
 			streams[i].bcaster_type = userDetail;
 			streams[i].account_created = userJoin;
 		},
