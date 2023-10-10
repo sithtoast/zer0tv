@@ -352,7 +352,6 @@ function everyMoveYouMake(streams) {
 		method: 'GET',
 		headers,
 		success: (response) => {
-			console.log(response);
 			const channelDeets = response.total;
 			streams[i].follower_count = channelDeets;
 
@@ -382,12 +381,9 @@ function tagYouAreIt(streams) {
 		headers,
 		success: (response) => {
 			const channelDeets = response.data;
-			console.log(channelDeets);
 			const tags = channelDeets[0].tags;
-			console.log(tags.length);
 			for (let j = 0; j < tags.length; j++) {
 				const value = tags[j];
-				console.log(value);
 				tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
 			}
 			tagsWithoutCommas = tags.toString();
