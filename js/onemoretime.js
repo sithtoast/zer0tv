@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:64721`;
+const REDIRECT_URI = `http://localhost:61076`;
 
 
 // Twitch API Endpoints
@@ -252,7 +252,7 @@ function reallyLongTimeAgo(created_at) {
 // Function to fetch and display Twitch streams within a category with fewer than 10 viewers
 function fetchStreams(categoryId, categoryName) {
 	
-	const MAX_STREAMS = 1000;
+	const MAX_STREAMS = 250;
 	const streamArray = [];
 	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
 	
@@ -363,8 +363,46 @@ function everyMoveYouMake(streams) {
 		});
 		promises.push(promise);
 	}
+	$.when.apply($, promises).done(() => { tagYouAreIt(streams); });
+}
+
+function tagYouAreIt(streams) {
+	const headers = {
+		'Client-ID': CLIENT_ID,
+		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
+	};
+	
+	let promises = [];
+	for (let i = 0; i < streams.length; i++) {
+		const url = `${TWITCH_API_BASE_URL}/channels?broadcaster_id=${streams[i].user_id}`;
+		// Check if the current element is an object
+		const promise = $.ajax({
+		url,
+		method: 'GET',
+		headers,
+		success: (response) => {
+			const channelDeets = response.data;
+			console.log(channelDeets);
+			const tags = channelDeets[0].tags;
+			console.log(tags.length);
+			for (let j = 0; j < tags.length; j++) {
+				const value = tags[j];
+				console.log(value);
+				tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
+			}
+			tagsWithoutCommas = tags.toString();
+			tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
+			streams[i].tags = tagsWithoutCommas;
+		},
+		error: (error) => {
+			console.log(error);
+		}
+		});
+		promises.push(promise);
+	}
 	$.when.apply($, promises).done(() => { streams10OrLess(streams); });
 }
+
 			// Filter streams with fewer than 10 viewers
 function streams10OrLess(streams) {
 			
@@ -374,7 +412,7 @@ function streams10OrLess(streams) {
 			isMature(filteredStreams);
 				// Display filtered streams in a table
 			const table = document.createElement('table');
-			table.classList.add('table', 'table-striped', 'table-hover', 'table-sm', 'caption-top');
+			table.classList.add('table', 'caption-top', 'table-striped', 'table-hover', 'table-responsive');
 			table.innerHTML = `
 				<caption>${streams[0].game_name} streams</caption>
 				<thead>
@@ -387,7 +425,8 @@ function streams10OrLess(streams) {
 						<th>Mature</th>
 						<th>Viewers</th>
 						<th>Followers</th>
-						<th>Started</th> <!-- New column for stream start time -->
+						<th>Started</th>
+						<th>Tags</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -399,6 +438,7 @@ function streams10OrLess(streams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
+				
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
 				<td>${stream.bcaster_type}</td>
@@ -408,6 +448,7 @@ function streams10OrLess(streams) {
 				<td>${stream.is_mature}</td>
 				<td>${stream.viewer_count}</td>
 				<td>${stream.follower_count}</td>
+				<td>${stream.tags}</td>
 				<td>${formattedTime}</td>
 				`;
 				table.querySelector('tbody').appendChild(row);
