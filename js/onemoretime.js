@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:49342`;
+const REDIRECT_URI = `http://localhost:64721`;
 
 
 // Twitch API Endpoints
@@ -335,6 +335,35 @@ function fetchUserDeets(streams) {
 		});
 		promises.push(promise);
 	}
+	$.when.apply($, promises).done(() => { everyMoveYouMake(streams); });
+}
+
+function everyMoveYouMake(streams) {
+	const headers = {
+		'Client-ID': CLIENT_ID,
+		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
+	};
+	
+	let promises = [];
+	for (let i = 0; i < streams.length; i++) {
+		const url = `${TWITCH_API_BASE_URL}/channels/followers?broadcaster_id=${streams[i].user_id}`;
+		// Check if the current element is an object
+		const promise = $.ajax({
+		url,
+		method: 'GET',
+		headers,
+		success: (response) => {
+			console.log(response);
+			const channelDeets = response.total;
+			streams[i].follower_count = channelDeets;
+
+		},
+		error: (error) => {
+			console.log(error);
+		}
+		});
+		promises.push(promise);
+	}
 	$.when.apply($, promises).done(() => { streams10OrLess(streams); });
 }
 			// Filter streams with fewer than 10 viewers
@@ -357,6 +386,7 @@ function streams10OrLess(streams) {
 						<th>Game</th>
 						<th>Mature</th>
 						<th>Viewers</th>
+						<th>Followers</th>
 						<th>Started</th> <!-- New column for stream start time -->
 					</tr>
 				</thead>
@@ -377,6 +407,7 @@ function streams10OrLess(streams) {
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
 				<td>${stream.viewer_count}</td>
+				<td>${stream.follower_count}</td>
 				<td>${formattedTime}</td>
 				`;
 				table.querySelector('tbody').appendChild(row);
