@@ -298,7 +298,6 @@ function isMature(streams) {
 	}); 
 }
 
-		
 function fetchUserDeets(streams) {
 	
 	const headers = {
@@ -375,8 +374,9 @@ function streams10OrLess(streams) {
 			isMature(filteredStreams);
 				// Display filtered streams in a table
 			const table = document.createElement('table');
-			table.classList.add('table', 'table-striped', 'table-hover');
+			table.classList.add('table', 'table-striped', 'table-hover', 'table-sm', 'caption-top');
 			table.innerHTML = `
+				<caption>${streams[0].game_name} streams</caption>
 				<thead>
 					<tr>
 						<th>Streamer</th>
