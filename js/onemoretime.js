@@ -444,8 +444,8 @@ function streams10OrLess(streams) {
 				<td>${stream.is_mature}</td>
 				<td>${stream.viewer_count}</td>
 				<td>${stream.follower_count}</td>
-				<td>${stream.tags}</td>
 				<td>${formattedTime}</td>
+				<td>${stream.tags}</td>
 				`;
 				table.querySelector('tbody').appendChild(row);
 				});
