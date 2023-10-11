@@ -412,6 +412,7 @@ function tagYouAreIt(streams) {
 }
 
 function howManyEyeballs(streams) {
+	
 	for (let i = 0; i < streams.length; i++) {
 		viewerCount = viewerCount + streams[i].viewer_count;
 	}
