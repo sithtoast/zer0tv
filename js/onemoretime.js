@@ -24,6 +24,9 @@ const userInfo = document.getElementById('user-info'); // Add an element for use
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
+let viewerCount = 0;
+let streamCount = 0;
+
 
 // Event listener for the login button
 loginButton.addEventListener('click', () => {
@@ -179,21 +182,30 @@ async function searchCategories(categoryName) {
 		if (response.ok) {
 			const data = await response.json();
 			const categories = data.data;
+			// Get the categories container
+			const categoriesContainer = document.querySelector('.category-badges');
 
 			if (categories.length > 0) {
 				// Clear the existing category search results
 				categorySearchResultList.innerHTML = '';
-				categorySearchResultList.textContent = 'Search Results';
 				categories.forEach((category) => {
-					const listItem = document.createElement('span');
-					listItem.classList.add('badge', 'badge-primary', 'mr-2');
-					listItem.textContent = category.name;
-					listItem.addEventListener('click', () => {
+						const boxArtDiv = document.createElement('div');
+					
+
+						let boxArt = category.box_art_url;
+						const boxArtImage = document.createElement('img');
+						boxArtImage.src = boxArt.replace('52x72', '150x220');
+						boxArtImage.title = `${category.name}`;
+					
+					boxArtImage.addEventListener('click', () => {
 						// When a category is clicked, fetch streams in that category
 						fetchStreams(category.id, category.name);
 					});
-					categorySearchResultList.appendChild(listItem);
+					
+					boxArtDiv.appendChild(boxArtImage);
+					categorySearchResultList.appendChild(boxArtDiv);
 				});
+				
 
 				// Display the category search results container
 				categorySearchResults.style.display = 'block';
@@ -252,7 +264,7 @@ function reallyLongTimeAgo(created_at) {
 // Function to fetch and display Twitch streams within a category with fewer than 10 viewers
 function fetchStreams(categoryId, categoryName) {
 	
-	const MAX_STREAMS = 250;
+	const MAX_STREAMS = 300;
 	const streamArray = [];
 	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
 	
@@ -399,18 +411,34 @@ function tagYouAreIt(streams) {
 	$.when.apply($, promises).done(() => { streams10OrLess(streams); });
 }
 
-			// Filter streams with fewer than 10 viewers
-function streams10OrLess(streams) {
+function howManyEyeballs(streams) {
+	for (let i = 0; i < streams.length; i++) {
+		viewerCount = viewerCount + streams[i].viewer_count;
+	}
+	streams.viewer_count = viewerCount;
+	streams.length = streamCount;
+	console.log(streams);
+	streamFilter(streams);
+}			
+
+function streamFilter(streams) {
+	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
+	if (filteredStreams.length > 0) {
+	isMature(filteredStreams);
+	fetchUserDeets(filteredStreams);
+} else {
+	content.textContent = `No streams found.`;
+}
+}
 			
-			console.log(streams);
-			const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
-			if (filteredStreams.length > 0) {
-			isMature(filteredStreams);
-				// Display filtered streams in a table
+			// Filter streams with fewer than 10 viewers
+function streams10OrLess(filteredStreams) {
+			
+			// Display filtered streams in a table
 			const table = document.createElement('table');
 			table.classList.add('table', 'caption-top', 'table-striped', 'table-hover', 'table-responsive');
 			table.innerHTML = `
-				<caption>${streams[0].game_name} streams</caption>
+				<caption>${filteredStreams[0].game_name} streams</caption>
 				<thead>
 					<tr>
 						<th>Streamer</th>
@@ -453,7 +481,4 @@ function streams10OrLess(streams) {
 								// Replace the content with the table
 								content.innerHTML = '';
 								content.appendChild(table);
-							} else {
-								content.textContent = `No streams found.`;
-							}
 						}
