@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-//const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:61076`;
+const REDIRECT_URI = 'https://zer0.tv';
+//const REDIRECT_URI = `http://localhost:61076`;
 
 
 // Twitch API Endpoints
