@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:61076`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:62946`;
 
 
 // Twitch API Endpoints
@@ -264,8 +264,9 @@ function reallyLongTimeAgo(created_at) {
 // Function to fetch and display Twitch streams within a category with fewer than 10 viewers
 function fetchStreams(categoryId, categoryName) {
 	
-	const MAX_STREAMS = 300;
+	const MAX_STREAMS = 100;
 	const streamArray = [];
+	const useridArray = [];
 	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
 	
 	const headers = {
@@ -284,10 +285,13 @@ function fetchStreams(categoryId, categoryName) {
 				if (streamArray.length < MAX_STREAMS && response.pagination && response.pagination.cursor) {
 					// Continue fetching streams if not reached the limit
 					fetchStreamsRecursive(`${apiUrl}&after=${response.pagination.cursor}`);
+					for (let i = 0; i < streams.length; i++) { 
+						useridArray.push(streams[i].user_id);
+						streams[i].broadcaster_id = streams[i].user_id;
+					}
 				} else {
 					// Display the streams in the table
-					fetchUserDeets(streamArray);
-					
+					fetchMultipleUsersInfo(useridArray, streamArray);
 				}
 			},
 			error: (error) => {
@@ -309,6 +313,95 @@ function isMature(streams) {
 		} else { stream.is_mature = ratedE; }
 	}); 
 }
+
+function fetchMultipleUsersInfo(useridArray, streams) {	
+	console.log(useridArray);
+	console.log(streams);
+	
+	let userDeets = [];
+	let merged = [];
+	
+	const headers = {
+		'Client-ID': CLIENT_ID,
+		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
+	};
+	
+	const promises = [];
+	const queryParams = `id=${useridArray.join('&id=')}`;
+	const url = `${TWITCH_API_BASE_URL}/users?${queryParams}`;
+	console.log(url);
+	const promise = $.ajax({
+		url,
+		method: 'GET',
+		headers,
+		success: (response) => {
+			userDeets = response.data;			  
+		},
+		error: (error) => {
+			console.log(error);
+		}
+		});
+		promises.push(promise);
+		$.when.apply($, promises).done(() => { mergeArraysByCommonKey(streams, userDeets, 'id', useridArray);	});
+}
+
+function fetchMultipleChannelsInfo(streams, useridArray) {	
+	console.log(streams);
+	let channelDeets = [];
+	
+	const headers = {
+		'Client-ID': CLIENT_ID,
+		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
+	};
+	
+	const promises = [];
+	const queryParams = `broadcaster_id=${useridArray.join('&broadcaster_id=')}`;
+	const url = `${TWITCH_API_BASE_URL}/channels?${queryParams}`;
+	console.log(url);
+	const promise = $.ajax({
+		url,
+		method: 'GET',
+		headers,
+		success: (response) => {
+			channelDeets = response.data;
+			
+		},
+		error: (error) => {
+			console.log(error);
+		}
+		});
+		promises.push(promise);
+		$.when.apply($, promises).done(() => { mergeStreamsAndChannelsByCommonKey(streams, channelDeets, 'broadcaster_id'); });
+}
+
+function mergeArraysByCommonKey(arr1, arr2, key, useridArray) {
+  console.log(arr1);
+  console.log(arr2);
+  console.log(useridArray);
+  
+arr1.forEach(
+	o1 => Object.assign(
+	  o1, arr2.find(o2 => o2.key === o1.key)
+	)
+  );
+  
+  console.log(arr1);
+  fetchMultipleChannelsInfo(arr1, useridArray);
+  } 
+  
+function mergeStreamsAndChannelsByCommonKey(streams, channelDeets, key) {
+	console.log(streams);
+	console.log(channelDeets);
+	  
+	streams.forEach(
+		o1 => Object.assign(
+		  o1, channelDeets.find(o2 => o2.key === o1.key)
+		)
+	  );
+	  
+	  console.log(streams);
+	  everyMoveYouMake(streams);
+	  }
 
 function fetchUserDeets(streams) {
 	
@@ -374,41 +467,7 @@ function everyMoveYouMake(streams) {
 		});
 		promises.push(promise);
 	}
-	$.when.apply($, promises).done(() => { tagYouAreIt(streams); });
-}
-
-function tagYouAreIt(streams) {
-	const headers = {
-		'Client-ID': CLIENT_ID,
-		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
-	};
-	
-	let promises = [];
-	for (let i = 0; i < streams.length; i++) {
-		const url = `${TWITCH_API_BASE_URL}/channels?broadcaster_id=${streams[i].user_id}`;
-		// Check if the current element is an object
-		const promise = $.ajax({
-		url,
-		method: 'GET',
-		headers,
-		success: (response) => {
-			const channelDeets = response.data;
-			const tags = channelDeets[0].tags;
-			for (let j = 0; j < tags.length; j++) {
-				const value = tags[j];
-				tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
-			}
-			tagsWithoutCommas = tags.toString();
-			tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
-			streams[i].tags = tagsWithoutCommas;
-		},
-		error: (error) => {
-			console.log(error);
-		}
-		});
-		promises.push(promise);
-	}
-	$.when.apply($, promises).done(() => { streams10OrLess(streams); });
+	$.when.apply($, promises).done(() => { howManyEyeballs(streams); });
 }
 
 function howManyEyeballs(streams) {
@@ -417,16 +476,19 @@ function howManyEyeballs(streams) {
 		viewerCount = viewerCount + streams[i].viewer_count;
 	}
 	streams.viewer_count = viewerCount;
-	streams.length = streamCount;
+	console.log(viewerCount);
 	console.log(streams);
 	streamFilter(streams);
 }			
 
 function streamFilter(streams) {
+	streamCount = streams.length;
+	console.log(streamCount);
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 	if (filteredStreams.length > 0) {
 	isMature(filteredStreams);
-	fetchUserDeets(filteredStreams);
+	//tagYouAreIt(filteredStreams);
+	streams10OrLess(filteredStreams);
 } else {
 	content.textContent = `No streams found.`;
 }
@@ -439,7 +501,7 @@ function streams10OrLess(filteredStreams) {
 			const table = document.createElement('table');
 			table.classList.add('table', 'caption-top', 'table-striped', 'table-hover', 'table-responsive');
 			table.innerHTML = `
-				<caption>${filteredStreams[0].game_name} streams</caption>
+				<caption>${filteredStreams[0].game_name} streams. ${viewerCount} viewers in ${streamCount} streams. </caption>
 				<thead>
 					<tr>
 						<th>Streamer</th>
@@ -463,11 +525,20 @@ function streams10OrLess(filteredStreams) {
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
+				const createdAt = reallyLongTimeAgo(stream.created_at);
+				
+				for (let j = 0; j < stream.tags.length; j++) {
+					const value = stream.tags[j];
+					stream.tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
+					}
+				tagsWithoutCommas = stream.tags.toString();
+				tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
+				stream.tags = tagsWithoutCommas;
 				
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-				<td>${stream.bcaster_type}</td>
-				<td>${stream.account_created}</td>
+				<td>${stream.broadcaster_type}</td>
+				<td>${createdAt}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
 				<td>${stream.is_mature}</td>
@@ -483,3 +554,4 @@ function streams10OrLess(filteredStreams) {
 								content.innerHTML = '';
 								content.appendChild(table);
 						}
+					
