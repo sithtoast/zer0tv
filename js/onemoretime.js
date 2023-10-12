@@ -27,7 +27,7 @@ const userLogin = document.getElementById('user-login'); // Add an element to di
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
 let streamCount = 0;
-
+let viewerCount = 0;
 
 // Event listener for the login button
 loginButton.addEventListener('click', () => {
@@ -421,7 +421,7 @@ function everyMoveYouMake(streams) {
 // Total number of viewers for retrieved streams
 function howManyEyeballs(streams) {
 	
-	let viewerCount = 0;
+	viewerCount = 0;
 	
 	for (let i = 0; i < streams.length; i++) {
 		viewerCount = viewerCount + streams[i].viewer_count;
