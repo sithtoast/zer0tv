@@ -225,7 +225,7 @@ async function searchCategories(categoryName) {
 	}
 }
 
-async function fetchStreams(gameName, limit = 300, cursor = null) {
+async function fetchStreams(gameName, limit = 1500, cursor = null) {
  
   const baseUrl = 'https://api.twitch.tv/helix/streams';
   
@@ -443,7 +443,6 @@ function isMature(streams) {
 
 // Last minute calls and filtering streams with fewer than 4 viewers
 function streamFilter(streams) {
-	console.log(streams);
 	streamCount = streams.length;
 	howManyEyeballs(streams);
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
@@ -458,80 +457,132 @@ function streamFilter(streams) {
 			
 
 function streams10OrLess(filteredStreams) {
+	
+			const streamsData = filteredStreams;
+			const resultsPerPage = 50; // Number of results per page
+			let currentPage = 1;// Your stream data goes here
 			
-			// Display filtered streams in a table
-			const table = document.createElement('table');
-			table.classList.add('table', 'caption-top', 'table-striped', 'table-hover', 'table-responsive');
-			table.innerHTML = `
-				<caption>${filteredStreams[0].game_name} streams. ${viewerCount} viewers in ${streamCount} streams. </caption>
-				<thead>
-					<tr>
-						<th>Streamer</th>
-						<th>Type</th>
-						<th>Age</th>
-						<th>Title</th>
-						<th>Game</th>
-						<th>Mature</th>
-						<th>Viewers</th>
-						<th>Followers</th>
-						<th>Started</th>
-						<th>Tags</th>
-					</tr>
-				</thead>
-				<tbody>
-					<!-- Streams will be added here -->
-				</tbody>
-			`;
+			function renderTable() {
+				const startIndex = (currentPage - 1) * resultsPerPage;
+				const endIndex = startIndex + resultsPerPage;
+				const displayedStreams = streamsData.slice(startIndex, endIndex);
 
-			console.log(filteredStreams);
-			filteredStreams.forEach((stream) => {
-				const row = document.createElement('tr');
-				const formattedTime = formatTimeDifference(stream.started_at);
-				const createdAt = reallyLongTimeAgo(stream.user.created_at);
 				
-				//makes tags into badges
-				
-				if ( stream.tags && stream.tags.length > 0 ) {
-					for (let j = 0; j < stream.tags.length; j++) {
-						
-						const value = stream.tags[j];
-						stream.tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
-					}
-					tagsWithoutCommas = stream.tags.toString();
-					tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
-					stream.tags = tagsWithoutCommas;
-				} else stream.tags = "";
-				
-				// puts bits icon or twitch logo for affilate/partner
-				
-				const partnerIcon = '<img src=img/partner.png alt="partner">';
-				const affiliateIcon = '<img src=img/bits.png alt=affiliate>';
-				if (stream.user.broadcaster_type === "partner") {
-					stream.user.broadcaster_type = partnerIcon;
-				}
-				if (stream.user.broadcaster_type === "affiliate") {
-					stream.user.broadcaster_type = affiliateIcon;
-				}
-				
-				row.innerHTML = `
-				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-				<td>${stream.user.broadcaster_type}</td>
-				<td>${createdAt}</td>
-				<td>${stream.title}</td>
-				<td>${stream.game_name}</td>
-				<td>${stream.is_mature}</td>
-				<td>${stream.viewer_count}</td>
-				<td>${stream.follower_count}</td>
-				<td>${formattedTime}</td>
-				<td>${stream.tags}</td>
-				`;
-				table.querySelector('tbody').appendChild(row);
-				});
-				
-								// Replace the content with the table
-								content.innerHTML = '';
-								content.appendChild(table);
+				const tableBody = document.getElementById('search-result-list');
+				tableBody.innerHTML = '';
+			
+				displayedStreams.forEach((stream) => {
+					
+					const formattedTime = formatTimeDifference(stream.started_at);
+					const createdAt = reallyLongTimeAgo(stream.user.created_at);
+					const streamLink = `<a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a>`
+					
+					//makes tags into badges
+					
+					if ( stream.tags && stream.tags.length > 0 ) {
+						for (let j = 0; j < stream.tags.length; j++) {
+							
+							const value = stream.tags[j];
+							stream.tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
 						}
+						tagsWithoutCommas = stream.tags.toString();
+						tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
+						stream.tags = tagsWithoutCommas;
+					} else stream.tags = "";
+					
+					// puts bits icon or twitch logo for affilate/partner
+					
+					const partnerIcon = '<img src=img/partner.png alt="partner">';
+					const affiliateIcon = '<img src=img/bits.png alt=affiliate>';
+					if (stream.user.broadcaster_type === "partner") {
+						stream.user.broadcaster_type = partnerIcon;
+					}
+					if (stream.user.broadcaster_type === "affiliate") {
+						stream.user.broadcaster_type = affiliateIcon;
+					}
+					
+					// Create and append rows for the displayed streams
+					const row = tableBody.insertRow();
+					const streamerCell = row.insertCell(0);
+					const typeCell = row.insertCell(1);
+					const ageCell = row.insertCell(2);
+					const titleCell = row.insertCell(3);
+					const gameCell = row.insertCell(4);
+					const matureCell = row.insertCell(5);
+					const viewersCell = row.insertCell(6);
+					const followersCell = row.insertCell(7);
+					const startedCell = row.insertCell(8);
+					const tagsCell = row.insertCell(9);
+			
+					streamerCell.innerHTML = streamLink;
+					typeCell.innerHTML = stream.user.broadcaster_type;
+					ageCell.textContent = createdAt;
+					titleCell.textContent = stream.title;
+					gameCell.textContent = stream.game_name;
+					matureCell.innerHTML = stream.is_mature;
+					viewersCell.textContent = stream.viewer_count;
+					followersCell.textContent = stream.follower_count;
+					startedCell.textContent = formattedTime;
+					tagsCell.innerHTML = stream.tags;
+					// Update the format as needed					
+				});
+			}
+			
+			function updatePagination() {
+				const prevPageButton = document.getElementById('prevPage');
+				const nextPageButton = document.getElementById('nextPage');
+				const pageNumbers = document.getElementById('pageNumbers');
+				const pageButtonsContainer = document.getElementById('pageButtons');
+			
+				prevPageButton.disabled = currentPage === 1;
+				nextPageButton.disabled = currentPage * resultsPerPage >= streamsData.length;
+			
+				const totalPages = Math.ceil(streamsData.length / resultsPerPage);
+				//pageNumbers.textContent = `Page ${currentPage} of ${totalPages}`;
+			
+				// Clear the page number buttons container
+				pageButtonsContainer.innerHTML = '';
+			
+				// Generate page number buttons and add event listeners
+				for (let page = 1; page <= totalPages; page++) {
+					const pageButton = document.createElement('button');
+					pageButton.textContent = page;
+					pageButton.classList.add('btn', 'btn-primary'); // Bootstrap button classes
+					pageButton.addEventListener('click', () => {
+						currentPage = page;
+						updatePagination();
+					});
+				
+					if (page === currentPage) {
+						pageButton.classList.add('active'); // Bootstrap active class
+					}
+				
+					pageButtonsContainer.appendChild(pageButton);
+				}
+				
+			
+				renderTable();
+			}
+			
+			// Event listeners for pagination buttons
+			document.getElementById('prevPage').addEventListener('click', () => {
+				if (currentPage > 1) {
+					currentPage--;
+					updatePagination();
+				}
+			});
+			
+			document.getElementById('nextPage').addEventListener('click', () => {
+				if (currentPage * resultsPerPage < streamsData.length) {
+					currentPage++;
+					updatePagination();
+				}
+			});
+			
+			// Initial rendering of the table
+			updatePagination();
+
+}
 					
 async function actuallyFetch(gameId) {
 	try {
