@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:52709`;
+const REDIRECT_URI = `http://localhost:57673`;
 
 
 // Twitch API Endpoints
@@ -465,56 +465,41 @@ function streams10OrLess(filteredStreams) {
 	let currentPage = 1;
 	let streamsData = filteredStreams; // Your stream data goes here	
 	
-	// Function to embed 5 random streams
-	// Function to embed 3 random streams with chat
-	function embedRandomStreamsAndChat() {
-		const randomStreams = [];
-		
-		// Generate 3 unique random indices
-		const randomIndices = [];
-		while (randomIndices.length < 3) {
-			const randomIndex = Math.floor(Math.random() * streamsData.length);
-			if (!randomIndices.includes(randomIndex)) {
-				randomIndices.push(randomIndex);
-			}
-		}
+	// Function to embed the selected stream and chat
+	function embedStreamAndChat(selectedStream) {
+		// Create an iframe for the selected stream
+		const streamIframe = document.createElement('iframe');
+		streamIframe.src = `https://player.twitch.tv/?channel=${selectedStream.user_name}?parent=zer0.tv`;
+		streamIframe.width = '600';
+		streamIframe.height = '400';
+		streamIframe.allowFullscreen = true;
+		streamIframe.frameBorder = '0';
 	
-		// Get the data for the randomly selected streams
-		randomIndices.forEach(index => {
-			randomStreams.push(streamsData[index]);
-		});
+		// Create an iframe for the chat
+		const chatIframe = document.createElement('iframe');
+		chatIframe.src = `https://www.twitch.tv/embed/${selectedStream.user_name}/chat?parent=zer0.tv`;
+		chatIframe.width = '300';
+		chatIframe.height = '400';
+		chatIframe.allowFullscreen = true;
+		chatIframe.frameBorder = '0';
 	
-		// Embed the random streams and chat
-		const embedContainer = document.getElementById('random-streams-and-chat-container');
-		embedContainer.innerHTML = ''; // Clear the previous embedded content
+		// Clear the previous embedded content
+		const embedContainer = document.getElementById('selected-stream-and-chat-container');
+		embedContainer.innerHTML = '';
 	
-		randomStreams.forEach(stream => {
-			const streamIframe = document.createElement('iframe');
-			streamIframe.src = `https://player.twitch.tv/?channel=${stream.user_name}&parent=zer0.tv`;
-			streamIframe.width = '300';
-			streamIframe.height = '200';
-			streamIframe.allowFullscreen = true;
-			streamIframe.frameBorder = '0';
+		// Create a container for the stream and chat side by side
+		const streamAndChatContainer = document.createElement('div');
+		streamAndChatContainer.className = 'stream-and-chat-container';
+		streamAndChatContainer.appendChild(streamIframe);
+		streamAndChatContainer.appendChild(chatIframe);
 	
-			const chatIframe = document.createElement('iframe');
-			chatIframe.src = `https://www.twitch.tv/embed/${stream.user_name}/chat`;
-			chatIframe.width = '300';
-			chatIframe.height = '200';
-			chatIframe.allowFullscreen = true;
-			chatIframe.frameBorder = '0';
-	
-			// Create a container for the stream and chat side by side
-			const streamAndChatContainer = document.createElement('div');
-			streamAndChatContainer.className = 'stream-and-chat-container';
-			streamAndChatContainer.appendChild(streamIframe);
-			streamAndChatContainer.appendChild(chatIframe);
-	
-			embedContainer.appendChild(streamAndChatContainer);
-		});
+		// Append the stream and chat container to the selected-stream-and-chat-container
+		embedContainer.appendChild(streamAndChatContainer);
 	}
 	
-	// Add a click event listener to the "Embed 3 Random Streams with Chat" button
-	document.getElementById('embedRandomStreamsAndChat').addEventListener('click', embedRandomStreamsAndChat);
+	function embedRandomStreamsandChat() {
+		
+	}
 
 
 	
@@ -662,6 +647,20 @@ function streams10OrLess(filteredStreams) {
 			
 			// Initial rendering of the table
 			updatePagination();
+			
+			// Add an event listener to each table row for stream selection
+			document.getElementById('search-result-list').addEventListener('click', function(event) {
+				const clickedRow = event.target.closest('tr');
+				if (clickedRow) {
+					const rowIndex = clickedRow.rowIndex - 1; // Subtract 1 to account for the table header
+					const selectedStream = streamsData[rowIndex];
+			
+					if (selectedStream) {
+						// Embed the selected stream and its chat
+						embedStreamAndChat(selectedStream);
+					}
+				}
+			});
 
 }
 					
