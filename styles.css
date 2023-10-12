@@ -10,11 +10,13 @@ body, h1, h2, ul {
 	justify-content: center;
 	align-items: center;
 	height: 100vh;
+	overflow-y: auto;
 }
 
 /* Style the search box */
 .search-box {
 	text-align: center;
+	position: sticky;
 }
 
 h1 {
@@ -96,4 +98,22 @@ h1 {
 
 .table tbody tr {
 	margin-bottom: 20px; /* Adjust the spacing between table rows */
+}
+
+.box-art-scroller {
+	width: 1200px;
+	height: 250px;
+	white-space: nowrap;
+	position: relative;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	-webkit-overflow-scrolling: touch;
+}
+
+.box-art-scroller div {
+	width: 15.5%;
+	float: none;
+	height: 90%;
+	display: inline-block;
+	zoom: 1;
 }
