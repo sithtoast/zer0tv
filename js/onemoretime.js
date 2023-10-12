@@ -448,7 +448,6 @@ async function everythingAboutYourChannel (userIds, userMerged) {
   
 function mergeChannels(streams, channelDeets) {
    
-   
    for (let i = 0; i < streams.length; i++) {
 	   streams[i].broadcaster_id = streams[i].user.id;
    }
@@ -601,6 +600,15 @@ function streams10OrLess(filteredStreams) {
 					tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
 					stream.tags = tagsWithoutCommas;
 				} else stream.tags = "";
+				
+				const partnerIcon = '<img src=img/partner.png alt="partner">';
+				const affiliateIcon = '<img src=img/bits.png alt=affiliate>';
+				if (stream.user.broadcaster_type === "partner") {
+					stream.user.broadcaster_type = partnerIcon;
+				}
+				if (stream.user.broadcaster_type === "affiliate") {
+					stream.user.broadcaster_type = affiliateIcon;
+				}
 				
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
