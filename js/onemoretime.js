@@ -466,12 +466,13 @@ function streams10OrLess(filteredStreams) {
 	let streamsData = filteredStreams; // Your stream data goes here	
 	
 	// Function to embed 5 random streams
-	function embedRandomStreams() {
+	// Function to embed 3 random streams with chat
+	function embedRandomStreamsAndChat() {
 		const randomStreams = [];
 		
-		// Generate 5 unique random indices
+		// Generate 3 unique random indices
 		const randomIndices = [];
-		while (randomIndices.length < 8) {
+		while (randomIndices.length < 3) {
 			const randomIndex = Math.floor(Math.random() * streamsData.length);
 			if (!randomIndices.includes(randomIndex)) {
 				randomIndices.push(randomIndex);
@@ -483,24 +484,38 @@ function streams10OrLess(filteredStreams) {
 			randomStreams.push(streamsData[index]);
 		});
 	
-		// Embed the random streams
-		const embedContainer = document.getElementById('random-streams-container');
-		embedContainer.innerHTML = ''; // Clear the previous embedded streams
+		// Embed the random streams and chat
+		const embedContainer = document.getElementById('random-streams-and-chat-container');
+		embedContainer.innerHTML = ''; // Clear the previous embedded content
 	
 		randomStreams.forEach(stream => {
-			const embeddedStream = document.createElement('iframe');
-			embeddedStream.src = `https://player.twitch.tv/?channel=${stream.user_name}&parent=zer0.tv`;
-			embeddedStream.width = '300';
-			embeddedStream.height = '200';
-			embeddedStream.allowFullscreen = true;
-			embeddedStream.frameBorder = '0';
+			const streamIframe = document.createElement('iframe');
+			streamIframe.src = `https://player.twitch.tv/?channel=${stream.user_name}`;
+			streamIframe.width = '300';
+			streamIframe.height = '200';
+			streamIframe.allowFullscreen = true;
+			streamIframe.frameBorder = '0';
 	
-			embedContainer.appendChild(embeddedStream);
+			const chatIframe = document.createElement('iframe');
+			chatIframe.src = `https://www.twitch.tv/embed/${stream.user_name}/chat`;
+			chatIframe.width = '300';
+			chatIframe.height = '200';
+			chatIframe.allowFullscreen = true;
+			chatIframe.frameBorder = '0';
+	
+			// Create a container for the stream and chat side by side
+			const streamAndChatContainer = document.createElement('div');
+			streamAndChatContainer.className = 'stream-and-chat-container';
+			streamAndChatContainer.appendChild(streamIframe);
+			streamAndChatContainer.appendChild(chatIframe);
+	
+			embedContainer.appendChild(streamAndChatContainer);
 		});
 	}
 	
-	// Add a click event listener to the button
-	document.getElementById('embedRandomStreams').addEventListener('click', embedRandomStreams);
+	// Add a click event listener to the "Embed 3 Random Streams with Chat" button
+	document.getElementById('embedRandomStreamsAndChat').addEventListener('click', embedRandomStreamsAndChat);
+
 
 	
 // Function to fetch followers for a user
