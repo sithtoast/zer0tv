@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:57673`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:57673`;
 
 
 // Twitch API Endpoints
@@ -516,44 +516,37 @@ function streams10OrLess(filteredStreams) {
 		});
 	
 		// Embed the random streams and chat
-		const embedContainer = document.getElementById('carousel-inner');
+		const embedContainer = document.getElementById('selected-stream-and-chat-container');
 		embedContainer.innerHTML = ''; // Clear the previous embedded content
 	
 		randomStreams.forEach(stream => {
-		const isActive = index === 0 ? 'active' : ''; // Set the first item as active
-				const carouselItem = document.createElement('div');
-				carouselItem.className = `carousel-item ${isActive}`;
-		
-				// Create an iframe for the stream
-				const streamIframe = document.createElement('iframe');
-				streamIframe.src = `https://player.twitch.tv/?channel=${selectedStream.user_name}&parent=zer0.tv`;
-				streamIframe.width = '600';
-				streamIframe.height = '400';
-				streamIframe.allowFullscreen = true;
-				streamIframe.frameBorder = '0';
-				
-				// Create an iframe for the chat
-				const chatIframe = document.createElement('iframe');
-				chatIframe.src = `https://www.twitch.tv/embed/${selectedStream.user_name}/chat?parent=zer0.tv`;
-				chatIframe.width = '400';
-				chatIframe.height = '400';
-				chatIframe.allowFullscreen = true;
-				chatIframe.frameBorder = '0';
-				
-				// Create a container for the stream and add it to the carousel item
-				const streamContainer = document.createElement('div');
-				streamContainer.appendChild(streamIframe);
-		
-				carouselItem.appendChild(streamContainer);
-				carouselInner.appendChild(carouselItem);
-			});
-		
-			// Initialize the carousel
-			$('#streamCarousel').carousel();
-		}
+			const streamIframe = document.createElement('iframe');
+			streamIframe.src = `https://player.twitch.tv/?channel=${stream.user_name}&parent=zer0.tv`;
+			streamIframe.width = '300';
+			streamIframe.height = '200';
+			streamIframe.allowFullscreen = true;
+			streamIframe.frameBorder = '0';
+	
+			const chatIframe = document.createElement('iframe');
+			chatIframe.src = `https://www.twitch.tv/embed/${stream.user_name}/chat?parent=zer0.tv`;
+			chatIframe.width = '300';
+			chatIframe.height = '200';
+			chatIframe.allowFullscreen = true;
+			chatIframe.frameBorder = '0';
+	
+			// Create a container for the stream and chat side by side
+			const streamAndChatContainer = document.createElement('div');
+			streamAndChatContainer.className = 'stream-and-chat-container';
+			streamAndChatContainer.appendChild(streamIframe);
+			streamAndChatContainer.appendChild(chatIframe);
+	
+			embedContainer.appendChild(streamAndChatContainer);
+		});
+	}
 	
 	// Add a click event listener to the "Embed 3 Random Streams with Chat" button
 	document.getElementById('embedRandomStreamsAndChat').addEventListener('click', embedRandomStreamsAndChat);
+
 
 
 
