@@ -591,15 +591,16 @@ function streams10OrLess(filteredStreams) {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
 				const createdAt = reallyLongTimeAgo(stream.user.created_at);
-				
-				for (let j = 0; j < stream.tags.length; j++) {
-					const value = stream.tags[j];
-					stream.tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
-				}
-				tagsWithoutCommas = stream.tags.toString();
-				tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
-				stream.tags = tagsWithoutCommas;
-				
+				if ( stream.tags && stream.tags.length > 0 ) {
+					for (let j = 0; j < stream.tags.length; j++) {
+						
+						const value = stream.tags[j];
+						stream.tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
+					}
+					tagsWithoutCommas = stream.tags.toString();
+					tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
+					stream.tags = tagsWithoutCommas;
+				} else stream.tags = "";
 				
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
