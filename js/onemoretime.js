@@ -465,6 +465,44 @@ function streams10OrLess(filteredStreams) {
 	let currentPage = 1;
 	let streamsData = filteredStreams; // Your stream data goes here	
 	
+	// Function to embed 5 random streams
+	function embedRandomStreams() {
+		const randomStreams = [];
+		
+		// Generate 5 unique random indices
+		const randomIndices = [];
+		while (randomIndices.length < 8) {
+			const randomIndex = Math.floor(Math.random() * streamsData.length);
+			if (!randomIndices.includes(randomIndex)) {
+				randomIndices.push(randomIndex);
+			}
+		}
+	
+		// Get the data for the randomly selected streams
+		randomIndices.forEach(index => {
+			randomStreams.push(streamsData[index]);
+		});
+	
+		// Embed the random streams
+		const embedContainer = document.getElementById('random-streams-container');
+		embedContainer.innerHTML = ''; // Clear the previous embedded streams
+	
+		randomStreams.forEach(stream => {
+			const embeddedStream = document.createElement('iframe');
+			embeddedStream.src = `https://player.twitch.tv/?channel=${stream.user_name}&parent=zer0.tv`;
+			embeddedStream.width = '300';
+			embeddedStream.height = '200';
+			embeddedStream.allowFullscreen = true;
+			embeddedStream.frameBorder = '0';
+	
+			embedContainer.appendChild(embeddedStream);
+		});
+	}
+	
+	// Add a click event listener to the button
+	document.getElementById('embedRandomStreams').addEventListener('click', embedRandomStreams);
+
+	
 // Function to fetch followers for a user
 	async function fetchFollowers(userId, accessToken) {
 		try {
