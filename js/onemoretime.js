@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-//const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:50328`;
+const REDIRECT_URI = 'https://zer0.tv';
+//const REDIRECT_URI = `http://localhost:50328`;
 
 
 // Twitch API Endpoints
@@ -423,7 +423,7 @@ async function everythingAboutYourChannel (userIds, userMerged) {
 	console.log(channelsInfo);
 	const fullyMerged = await mergeChannels(userMerged, channelsInfo);
 	console.log(fullyMerged);
-	everyMoveYouMake(fullyMerged);
+	streamFilter(fullyMerged);
   } catch (error) {
 	console.error('An error occurred:', error);
   }
@@ -533,7 +533,7 @@ function everyMoveYouMake(streams) {
 		});
 		promises.push(promise);
 	}
-	$.when.apply($, promises).done(() => { streamFilter(streams); });
+	$.when.apply($, promises).done(() => { 	streams10OrLess(streams); });
 }
 
 function howManyEyeballs(streams) {
@@ -552,8 +552,8 @@ function streamFilter(streams) {
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 	if (filteredStreams.length > 0) {
 	isMature(filteredStreams);
-	//tagYouAreIt(filteredStreams);
-	streams10OrLess(filteredStreams);
+	everyMoveYouMake(filteredStreams);
+
 } else {
 	content.textContent = `No streams found.`;
 }
