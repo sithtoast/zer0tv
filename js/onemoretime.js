@@ -490,7 +490,7 @@ function streams10OrLess(filteredStreams) {
 	
 		randomStreams.forEach(stream => {
 			const streamIframe = document.createElement('iframe');
-			streamIframe.src = `https://player.twitch.tv/?channel=${stream.user_name}`;
+			streamIframe.src = `https://player.twitch.tv/?channel=${stream.user_name}&parent=zer0.tv`;
 			streamIframe.width = '300';
 			streamIframe.height = '200';
 			streamIframe.allowFullscreen = true;
