@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:50328`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:52709`;
 
 
 // Twitch API Endpoints
@@ -27,7 +27,6 @@ const userLogin = document.getElementById('user-login'); // Add an element to di
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
 let streamCount = 0;
-let viewerCount = 0;
 
 
 // Event listener for the login button
@@ -226,45 +225,6 @@ async function searchCategories(categoryName) {
 	}
 }
 
-// Function to format the time difference as "X minutes ago" or "X hours ago"
-function formatTimeDifference(startedAt) {
-	const startTime = new Date(startedAt);
-	const currentTime = new Date();
-	const timeDifferenceInMilliseconds = currentTime - startTime;
-	
-	// Calculate minutes and hours
-	const minutes = Math.floor(timeDifferenceInMilliseconds / (1000 * 60));
-	const hours = Math.floor(minutes / 60);
-	
-	if (hours > 0) {
-		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-	} else {
-		return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-	}
-}
-
-function reallyLongTimeAgo(created_at) {
-	const createdDate = new Date(created_at);
-	const currentTime = new Date();
-	const timeDifference = currentTime - createdDate;
-	
-	const minutes = Math.floor(timeDifference / (1000 * 60));
-	const hours = Math.floor(minutes / 60);
-	const days = Math.floor(hours / 24);
-	const years = Math.floor(days / 365.25);
-	
-	if (years > 0) {
-		return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-	} else {
-		return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-	}
-	if (hours > 0) {
-		return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-	} else {
-		return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-	}
-}
-
 async function fetchStreams(gameName, limit = 300, cursor = null) {
  
   const baseUrl = 'https://api.twitch.tv/helix/streams';
@@ -319,23 +279,6 @@ const allStreams = [];
   }
 
 
-// Example usage
-
-
-
-function isMature(streams) {
-	const findTrue = true;
-	const ratedM = '<img src=img/ratedm.png alt="M">';
-	const ratedE = '<img src=img/ratede.png alt="E">';
-
-	streams.forEach((stream) => {
-		if (stream.is_mature === findTrue) {
-			stream.is_mature = ratedM;
-		} else { stream.is_mature = ratedE; }
-	}); 
-}
-
-
 async function fetchUsersInfo(userIds) {
 	
 	const usersInfo = [];
@@ -368,18 +311,6 @@ async function fetchUsersInfo(userIds) {
   }
 
   return usersInfo;
-}
-
-// Example usage
-async function everythingAboutYou (userIds, streams) {
-  try { // Replace with actual user IDs
-	const usersInfo = await fetchUsersInfo(userIds);
-	const userMerged = await mergeUsers(usersInfo, streams);
-	const channelsInfo = await everythingAboutYourChannel(userIds, userMerged);
-	//streamFilter(userMerged);
-  } catch (error) {
-	console.error('An error occurred:', error);
-  }
 }
 
 async function fetchChannelsInfo(userIds) {
@@ -416,19 +347,7 @@ async function fetchChannelsInfo(userIds) {
   return channelsInfo;
 }
 
-// Example usage
-async function everythingAboutYourChannel (userIds, userMerged) {
-  try { // Replace with actual user IDs
-	const channelsInfo = await fetchChannelsInfo(userIds);
-	console.log(channelsInfo);
-	const fullyMerged = await mergeChannels(userMerged, channelsInfo);
-	console.log(fullyMerged);
-	streamFilter(fullyMerged);
-  } catch (error) {
-	console.error('An error occurred:', error);
-  }
-}
-
+// merge stream array and user array
  function mergeUsers(users, streams) {
    // Create a map of user data using user_id as the key
    const userMap = new Map();
@@ -445,7 +364,9 @@ async function everythingAboutYourChannel (userIds, userMerged) {
  
    return mergedData;
  }
-  
+
+
+// Merge channel array with user-merged stream array.
 function mergeChannels(streams, channelDeets) {
    
    for (let i = 0; i < streams.length; i++) {
@@ -468,45 +389,7 @@ function mergeChannels(streams, channelDeets) {
    return mergedData;
  }
 
-function fetchUserDeets(streams) {
-	
-	const headers = {
-		'Client-ID': CLIENT_ID,
-		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
-	};
-	
-	let promises = [];
-	for (let i = 0; i < streams.length; i++) {
-		const url = `${TWITCH_API_BASE_URL}/users?id=${streams[i].user_id}`;
-		// Check if the current element is an object
-		const promise = $.ajax({
-		url,
-		method: 'GET',
-		headers,
-		success: (response) => {
-			const userDeets = response.data;
-			let userDetail = userDeets[0].broadcaster_type;
-			const userJoin = reallyLongTimeAgo(userDeets[0].created_at);
-			const partnerIcon = '<img src=img/partner.png alt="partner">';
-			const affiliateIcon = '<img src=img/twitch.png alt=affiliate>';
-			if (userDetail === "partner") {
-				userDetail = partnerIcon;
-			}
-			if (userDetail === "affiliate") {
-				userDetail = affiliateIcon;
-			}
-			streams[i].bcaster_type = userDetail;
-			streams[i].account_created = userJoin;
-		},
-		error: (error) => {
-			console.log(error);
-		}
-		});
-		promises.push(promise);
-	}
-	$.when.apply($, promises).done(() => { everyMoveYouMake(streams); });
-}
-
+// Number of followers each channel has
 function everyMoveYouMake(streams) {
 	const headers = {
 		'Client-ID': CLIENT_ID,
@@ -535,7 +418,10 @@ function everyMoveYouMake(streams) {
 	$.when.apply($, promises).done(() => { 	streams10OrLess(streams); });
 }
 
+// Total number of viewers for retrieved streams
 function howManyEyeballs(streams) {
+	
+	let viewerCount = 0;
 	
 	for (let i = 0; i < streams.length; i++) {
 		viewerCount = viewerCount + streams[i].viewer_count;
@@ -543,7 +429,19 @@ function howManyEyeballs(streams) {
 	streams.viewer_count = viewerCount;
 }			
 
+function isMature(streams) {
+	const findTrue = true;
+	const ratedM = '<img src=img/ratedm.png alt="M">';
+	const ratedE = '<img src=img/ratede.png alt="E">';
 
+	streams.forEach((stream) => {
+		if (stream.is_mature === findTrue) {
+			stream.is_mature = ratedM;
+		} else { stream.is_mature = ratedE; }
+	}); 
+}
+
+// Last minute calls and filtering streams with fewer than 4 viewers
 function streamFilter(streams) {
 	console.log(streams);
 	streamCount = streams.length;
@@ -558,7 +456,7 @@ function streamFilter(streams) {
 }
 }
 			
-			// Filter streams with fewer than 10 viewers
+
 function streams10OrLess(filteredStreams) {
 			
 			// Display filtered streams in a table
@@ -590,6 +488,9 @@ function streams10OrLess(filteredStreams) {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
 				const createdAt = reallyLongTimeAgo(stream.user.created_at);
+				
+				//makes tags into badges
+				
 				if ( stream.tags && stream.tags.length > 0 ) {
 					for (let j = 0; j < stream.tags.length; j++) {
 						
@@ -600,6 +501,8 @@ function streams10OrLess(filteredStreams) {
 					tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
 					stream.tags = tagsWithoutCommas;
 				} else stream.tags = "";
+				
+				// puts bits icon or twitch logo for affilate/partner
 				
 				const partnerIcon = '<img src=img/partner.png alt="partner">';
 				const affiliateIcon = '<img src=img/bits.png alt=affiliate>';
@@ -633,15 +536,32 @@ function streams10OrLess(filteredStreams) {
 async function actuallyFetch(gameId) {
 	try {
 		const gameName = gameId; // Replace with the actual game ID
-		const limit = 300;
 		const { allStreams, userIds } = await fetchStreams(gameName);
 		const usersInfo = await everythingAboutYou(userIds, allStreams);
-
-		
 		} catch (error) {
 		console.error('An error occurred:', error);
 		}
 	}
-async function mergedUserArray(mergedUser) {
-	console.log(mergedUser);
-}
+
+async function everythingAboutYou (userIds, streams) {
+	try { // Replace with actual user IDs
+		const usersInfo = await fetchUsersInfo(userIds);
+		const userMerged = await mergeUsers(usersInfo, streams);
+		const channelsInfo = await everythingAboutYourChannel(userIds, userMerged);
+		//streamFilter(userMerged);
+	  } catch (error) {
+		console.error('An error occurred:', error);
+	  }
+	}
+
+async function everythingAboutYourChannel (userIds, userMerged) {
+	  try {
+		const channelsInfo = await fetchChannelsInfo(userIds);
+		console.log(channelsInfo);
+		const fullyMerged = await mergeChannels(userMerged, channelsInfo);
+		console.log(fullyMerged);
+		streamFilter(fullyMerged);
+	  } catch (error) {
+		console.error('An error occurred:', error);
+	  }
+	}
