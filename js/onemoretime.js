@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:62946`;
+const REDIRECT_URI = `http://localhost:50328`;
 
 
 // Twitch API Endpoints
@@ -10,6 +10,8 @@ const LOGIN_URL = `https://id.twitch.tv/oauth2/authorize?client_id=${CLIENT_ID}&
 const STREAMS_URL = `${TWITCH_API_BASE_URL}/streams`;
 const TOP_CATEGORIES_URL = `${TWITCH_API_BASE_URL}/games/`; // Fetch top 10 categories initially
 const SEARCH_CATEGORIES_URL = `${TWITCH_API_BASE_URL}/search/categories`;
+const BASE_USERS_URL = `${TWITCH_API_BASE_URL}/users`;
+const BASE_CHANNELS_URL = `${TWITCH_API_BASE_URL}/channels`;
 
 // Elements
 const loginButton = document.getElementById('login-button');
@@ -24,8 +26,8 @@ const userInfo = document.getElementById('user-info'); // Add an element for use
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
-let viewerCount = 0;
 let streamCount = 0;
+let viewerCount = 0;
 
 
 // Event listener for the login button
@@ -155,7 +157,8 @@ async function fetchCategories() {
 				listItem.textContent = category.name;
 				listItem.addEventListener('click', () => {
 					// When a category is clicked, fetch streams in that category
-					fetchStreams(category.id, category.name);
+					//fetchStreams(category.id, category.name);
+					actuallyFetch(category.id);
 				});
 				categoryList.appendChild(listItem);
 			});
@@ -199,7 +202,8 @@ async function searchCategories(categoryName) {
 					
 					boxArtImage.addEventListener('click', () => {
 						// When a category is clicked, fetch streams in that category
-						fetchStreams(category.id, category.name);
+						//fetchStreams(category.id, category.name);
+						actuallyFetch(category.id);
 					});
 					
 					boxArtDiv.appendChild(boxArtImage);
@@ -261,46 +265,63 @@ function reallyLongTimeAgo(created_at) {
 	}
 }
 
-// Function to fetch and display Twitch streams within a category with fewer than 10 viewers
-function fetchStreams(categoryId, categoryName) {
-	
-	const MAX_STREAMS = 100;
-	const streamArray = [];
-	const useridArray = [];
-	const apiUrl = `${STREAMS_URL}?game_id=${categoryId}&first=100&language=en`;
-	
-	const headers = {
-		'Client-ID': CLIENT_ID,
-		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
-	};
-	
-	function fetchStreamsRecursive(url) {
-		$.ajax({
-			url,
-			method: 'GET',
-			headers,
-			success: (response) => {
-				const streams = response.data;
-				streamArray.push(...streams);
-				if (streamArray.length < MAX_STREAMS && response.pagination && response.pagination.cursor) {
-					// Continue fetching streams if not reached the limit
-					fetchStreamsRecursive(`${apiUrl}&after=${response.pagination.cursor}`);
-					for (let i = 0; i < streams.length; i++) { 
-						useridArray.push(streams[i].user_id);
-						streams[i].broadcaster_id = streams[i].user_id;
-					}
-				} else {
-					// Display the streams in the table
-					fetchMultipleUsersInfo(useridArray, streamArray);
-				}
-			},
-			error: (error) => {
-				console.error(error);
-			}
-		});
+async function fetchStreams(gameName, limit = 300, cursor = null) {
+ 
+  const baseUrl = 'https://api.twitch.tv/helix/streams';
+  
+  // Define query parameters
+  const params = new URLSearchParams({
+	game_id: gameName,
+	first: 100,
+  });
+
+  if (cursor) {
+	params.set('after', cursor);
+  }
+
+  const url = `${baseUrl}?${params.toString()}&language=en`;
+
+  const headers = {
+	'Client-ID': CLIENT_ID,
+	'Authorization': `Bearer ${accessToken}`, // Replace with your access token
+  };
+
+const allStreams = [];
+	const userIds = [];
+  
+	try {
+	  const response = await fetch(url, { headers });
+	  if (response.ok) {
+		const data = await response.json();
+		const streams = data.data;
+		const pagination = data.pagination;
+  
+		for (const stream of streams) {
+		  allStreams.push(stream);
+		  userIds.push(stream.user_id);
+		}
+  
+		if (allStreams.length < limit && pagination && pagination.cursor) {
+		  // If there are more streams to fetch, recursively call the function
+		  const { allStreams: remainingStreams, userIds: remainingUserIds } = await fetchStreams(gameName, limit - allStreams.length, pagination.cursor);
+		  allStreams.push(...remainingStreams);
+		  userIds.push(...remainingUserIds);
+		}
+  
+		return { allStreams, userIds };
+	  } else {
+		throw new Error(`Failed to fetch streams: ${response.status} - ${await response.text()}`);
+	  }
+	} catch (error) {
+	  console.error('Error fetching streams:', error);
+	  throw error;
 	}
-	fetchStreamsRecursive(apiUrl);
-}
+  }
+
+
+// Example usage
+
+
 
 function isMature(streams) {
 	const findTrue = true;
@@ -314,94 +335,139 @@ function isMature(streams) {
 	}); 
 }
 
-function fetchMultipleUsersInfo(useridArray, streams) {	
-	console.log(useridArray);
-	console.log(streams);
-	
-	let userDeets = [];
-	let merged = [];
-	
-	const headers = {
-		'Client-ID': CLIENT_ID,
-		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
-	};
-	
-	const promises = [];
-	const queryParams = `id=${useridArray.join('&id=')}`;
-	const url = `${TWITCH_API_BASE_URL}/users?${queryParams}`;
-	console.log(url);
-	const promise = $.ajax({
-		url,
-		method: 'GET',
-		headers,
-		success: (response) => {
-			userDeets = response.data;			  
-		},
-		error: (error) => {
-			console.log(error);
-		}
-		});
-		promises.push(promise);
-		$.when.apply($, promises).done(() => { mergeArraysByCommonKey(streams, userDeets, 'id', useridArray);	});
-}
 
-function fetchMultipleChannelsInfo(streams, useridArray) {	
-	console.log(streams);
-	let channelDeets = [];
+async function fetchUsersInfo(userIds) {
 	
-	const headers = {
-		'Client-ID': CLIENT_ID,
-		'Authorization': `Bearer ${accessToken}` // Replace with your Twitch access token
-	};
-	
-	const promises = [];
-	const queryParams = `broadcaster_id=${useridArray.join('&broadcaster_id=')}`;
-	const url = `${TWITCH_API_BASE_URL}/channels?${queryParams}`;
-	console.log(url);
-	const promise = $.ajax({
-		url,
-		method: 'GET',
-		headers,
-		success: (response) => {
-			channelDeets = response.data;
-			
-		},
-		error: (error) => {
-			console.log(error);
-		}
-		});
-		promises.push(promise);
-		$.when.apply($, promises).done(() => { mergeStreamsAndChannelsByCommonKey(streams, channelDeets, 'broadcaster_id'); });
-}
+	const usersInfo = [];
 
-function mergeArraysByCommonKey(arr1, arr2, key, useridArray) {
-  console.log(arr1);
-  console.log(arr2);
-  console.log(useridArray);
-  
-arr1.forEach(
-	o1 => Object.assign(
-	  o1, arr2.find(o2 => o2.key === o1.key)
-	)
-  );
-  
-  console.log(arr1);
-  fetchMultipleChannelsInfo(arr1, useridArray);
-  } 
-  
-function mergeStreamsAndChannelsByCommonKey(streams, channelDeets, key) {
-	console.log(streams);
-	console.log(channelDeets);
-	  
-	streams.forEach(
-		o1 => Object.assign(
-		  o1, channelDeets.find(o2 => o2.key === o1.key)
-		)
-	  );
-	  
-	  console.log(streams);
-	  everyMoveYouMake(streams);
+  for (let i = 0; i < userIds.length; i += 100) {
+	const batchUserIds = userIds.slice(i, i + 100);
+	const params = new URLSearchParams({ id: batchUserIds.join('&') });
+
+	const url = `${BASE_USERS_URL}?${params.toString()}`;
+	const fixedUrl = url.replace(/%26/g, "&id=");
+
+	const headers = {
+	  'Client-ID': CLIENT_ID,
+	  'Authorization': `Bearer ${accessToken}`,
+	};
+
+	try {
+	  const response = await fetch(fixedUrl, { headers });
+
+	  if (response.ok) {
+		const data = await response.json();
+		usersInfo.push(...data.data);
+	  } else {
+		throw new Error(`Failed to fetch user info: ${response.status} - ${await response.text()}`);
 	  }
+	} catch (error) {
+	  console.error('Error fetching user info:', error);
+	  throw error;
+	}
+  }
+
+  return usersInfo;
+}
+
+// Example usage
+async function everythingAboutYou (userIds, streams) {
+  try { // Replace with actual user IDs
+	const usersInfo = await fetchUsersInfo(userIds);
+	const userMerged = await mergeUsers(usersInfo, streams);
+	const channelsInfo = await everythingAboutYourChannel(userIds, userMerged);
+	//streamFilter(userMerged);
+  } catch (error) {
+	console.error('An error occurred:', error);
+  }
+}
+
+async function fetchChannelsInfo(userIds) {
+  let channelsInfo = [];
+
+  for (let i = 0; i < userIds.length; i += 100) {
+	const batchUserIds = userIds.slice(i, i + 100);
+	const params = new URLSearchParams({ broadcaster_id: batchUserIds.join('&') });
+
+	const url = `${BASE_CHANNELS_URL}?${params.toString()}`;
+	const fixedUrl = url.replace(/%26/g, "&broadcaster_id=");
+	
+
+	const headers = {
+	  'Client-ID': CLIENT_ID,
+	  'Authorization': `Bearer ${accessToken}`,
+	};
+
+	try {
+	  const response = await fetch(fixedUrl, { headers });
+
+	  if (response.ok) {
+		const data = await response.json();
+		channelsInfo.push(...data.data);
+	  } else {
+		throw new Error(`Failed to fetch user info: ${response.status} - ${await response.text()}`);
+	  }
+	} catch (error) {
+	  console.error('Error fetching user info:', error);
+	  throw error;
+	}
+  }
+
+  return channelsInfo;
+}
+
+// Example usage
+async function everythingAboutYourChannel (userIds, userMerged) {
+  try { // Replace with actual user IDs
+	const channelsInfo = await fetchChannelsInfo(userIds);
+	console.log(channelsInfo);
+	const fullyMerged = await mergeChannels(userMerged, channelsInfo);
+	console.log(fullyMerged);
+	everyMoveYouMake(fullyMerged);
+  } catch (error) {
+	console.error('An error occurred:', error);
+  }
+}
+
+ function mergeUsers(users, streams) {
+   // Create a map of user data using user_id as the key
+   const userMap = new Map();
+   users.forEach(user => userMap.set(user.id, user));
+ 
+   // Merge user and stream data based on user_id
+   const mergedData = streams.map(stream => {
+	 const user = userMap.get(stream.user_id);
+	 if (user) {
+	   return { ...stream, user };
+	 }
+	 return stream;
+   });
+ 
+   return mergedData;
+ }
+  
+function mergeChannels(streams, channelDeets) {
+   
+   
+   for (let i = 0; i < streams.length; i++) {
+	   streams[i].broadcaster_id = streams[i].user.id;
+   }
+
+   // Create a map of user data using user_id as the key
+   const channelMap = new Map();
+   streams.forEach(user => channelMap.set(user.broadcaster_id, user));
+ 
+   // Merge user and stream data based on user_id
+   const mergedData = streams.map(stream => {
+	 const channel = channelMap.get(stream.broadcaster_id);
+	 if (channel) {
+	   return { ...stream, channel };
+	 }
+	 return stream;
+   });
+ 
+   return mergedData;
+ }
 
 function fetchUserDeets(streams) {
 	
@@ -467,7 +533,7 @@ function everyMoveYouMake(streams) {
 		});
 		promises.push(promise);
 	}
-	$.when.apply($, promises).done(() => { howManyEyeballs(streams); });
+	$.when.apply($, promises).done(() => { streamFilter(streams); });
 }
 
 function howManyEyeballs(streams) {
@@ -476,14 +542,13 @@ function howManyEyeballs(streams) {
 		viewerCount = viewerCount + streams[i].viewer_count;
 	}
 	streams.viewer_count = viewerCount;
-	console.log(viewerCount);
-	console.log(streams);
-	streamFilter(streams);
 }			
 
+
 function streamFilter(streams) {
+	console.log(streams);
 	streamCount = streams.length;
-	console.log(streamCount);
+	howManyEyeballs(streams);
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 	if (filteredStreams.length > 0) {
 	isMature(filteredStreams);
@@ -521,23 +586,24 @@ function streams10OrLess(filteredStreams) {
 				</tbody>
 			`;
 
-
+			console.log(filteredStreams);
 			filteredStreams.forEach((stream) => {
 				const row = document.createElement('tr');
 				const formattedTime = formatTimeDifference(stream.started_at);
-				const createdAt = reallyLongTimeAgo(stream.created_at);
+				const createdAt = reallyLongTimeAgo(stream.user.created_at);
 				
 				for (let j = 0; j < stream.tags.length; j++) {
 					const value = stream.tags[j];
 					stream.tags[j] = `<a href="#" class="badge badge-info">${value}</a>`;
-					}
+				}
 				tagsWithoutCommas = stream.tags.toString();
 				tagsWithoutCommas = tagsWithoutCommas.replace(/,/g, "");
 				stream.tags = tagsWithoutCommas;
 				
+				
 				row.innerHTML = `
 				<td><a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a></td>
-				<td>${stream.broadcaster_type}</td>
+				<td>${stream.user.broadcaster_type}</td>
 				<td>${createdAt}</td>
 				<td>${stream.title}</td>
 				<td>${stream.game_name}</td>
@@ -555,3 +621,18 @@ function streams10OrLess(filteredStreams) {
 								content.appendChild(table);
 						}
 					
+async function actuallyFetch(gameId) {
+	try {
+		const gameName = gameId; // Replace with the actual game ID
+		const limit = 300;
+		const { allStreams, userIds } = await fetchStreams(gameName);
+		const usersInfo = await everythingAboutYou(userIds, allStreams);
+
+		
+		} catch (error) {
+		console.error('An error occurred:', error);
+		}
+	}
+async function mergedUserArray(mergedUser) {
+	console.log(mergedUser);
+}
