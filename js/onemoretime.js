@@ -497,9 +497,56 @@ function streams10OrLess(filteredStreams) {
 		embedContainer.appendChild(streamAndChatContainer);
 	}
 	
-	function embedRandomStreamsandChat() {
+// Function to embed 3 random streams with chat
+	function embedRandomStreamsAndChat() {
+		const randomStreams = [];
 		
+		// Generate 3 unique random indices
+		const randomIndices = [];
+		while (randomIndices.length < 3) {
+			const randomIndex = Math.floor(Math.random() * streamsData.length);
+			if (!randomIndices.includes(randomIndex)) {
+				randomIndices.push(randomIndex);
+			}
+		}
+	
+		// Get the data for the randomly selected streams
+		randomIndices.forEach(index => {
+			randomStreams.push(streamsData[index]);
+		});
+	
+		// Embed the random streams and chat
+		const embedContainer = document.getElementById('selected-stream-and-chat-container');
+		embedContainer.innerHTML = ''; // Clear the previous embedded content
+	
+		randomStreams.forEach(stream => {
+			const streamIframe = document.createElement('iframe');
+			streamIframe.src = `https://player.twitch.tv/?channel=${stream.user_name}`;
+			streamIframe.width = '300';
+			streamIframe.height = '200';
+			streamIframe.allowFullscreen = true;
+			streamIframe.frameBorder = '0';
+	
+			const chatIframe = document.createElement('iframe');
+			chatIframe.src = `https://www.twitch.tv/embed/${stream.user_name}/chat`;
+			chatIframe.width = '300';
+			chatIframe.height = '200';
+			chatIframe.allowFullscreen = true;
+			chatIframe.frameBorder = '0';
+	
+			// Create a container for the stream and chat side by side
+			const streamAndChatContainer = document.createElement('div');
+			streamAndChatContainer.className = 'stream-and-chat-container';
+			streamAndChatContainer.appendChild(streamIframe);
+			streamAndChatContainer.appendChild(chatIframe);
+	
+			embedContainer.appendChild(streamAndChatContainer);
+		});
 	}
+	
+	// Add a click event listener to the "Embed 3 Random Streams with Chat" button
+	document.getElementById('embedRandomStreamsAndChat').addEventListener('click', embedRandomStreamsAndChat);
+
 
 
 	
