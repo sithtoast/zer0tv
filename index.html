@@ -69,33 +69,35 @@
 </div>
 </div>
 
-<!-- Add a container for pagination controls -->
-<ul class="pagination">
-	<button id="prevPage"><<</button>
-	<div id="pageButtons" class="mt-3"></div>
-	<button id="nextPage">>></button>
-	
-</ul>
+<!-- Add a container for pagination controls at the top -->
+<div class="container mt-4">
+	<!-- Bootstrap pagination at the top -->
+	<nav>
+		<ul class="pagination justify-content-end" id="top-pagination-container">
+			<!-- Pagination buttons will be added here -->
+		</ul>
+	</nav>
+</div>
 
-<!-- Add a table for displaying stream results -->
-<!-- Add a table for displaying stream results with Bootstrap classes -->
 <div class="container mt-4">
 	<div class="table-responsive p-3">
 		<table class="table table-bordered table-hover">
+			<!-- Table header -->
 			<thead class="thead-dark">
 				<tr>
-					<th>Streamer</th>
-					<th>Type</th>
-					<th>Age</th>
-					<th>Title</th>
-					<th>Game</th>
-					<th>Mature</th>
-					<th>Viewers</th>
-					<th>Followers</th>
-					<th>Started</th>
-					<th>Tags</th>
+				<th>Streamer</th>
+				<th>Type</th>
+				<th>Age</th>
+				<th>Title</th>
+				<th>Game</th>
+				<th>Mature</th>
+				<th>Viewers</th>
+				<th>Followers</th>
+				<th>Started</th>
+				<th>Tags</th>
 				</tr>
 			</thead>
+			<!-- Table body -->
 			<tbody id="search-result-list">
 				<!-- Table rows will be dynamically added here -->
 			</tbody>
@@ -103,7 +105,15 @@
 	</div>
 </div>
 
-
+<!-- Add a container for pagination controls at the bottom -->
+<div class="container mt-4">
+	<!-- Bootstrap pagination at the bottom -->
+	<nav>
+		<ul class="pagination justify-content-end" id="bottom-pagination-container">
+			<!-- Pagination buttons will be added here -->
+		</ul>
+	</nav>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

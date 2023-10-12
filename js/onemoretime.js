@@ -28,6 +28,7 @@ const userProfileImage = document.getElementById('profile-image'); // Add an ele
 
 let streamCount = 0;
 let viewerCount = 0;
+let gameName = "";
 
 // Event listener for the login button
 loginButton.addEventListener('click', () => {
@@ -444,35 +445,75 @@ function isMature(streams) {
 // Last minute calls and filtering streams with fewer than 4 viewers
 function streamFilter(streams) {
 	streamCount = streams.length;
+	gameName = streams[0].game_name;
 	howManyEyeballs(streams);
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 	if (filteredStreams.length > 0) {
+	console.log(filteredStreams);
 	isMature(filteredStreams);
 	everyMoveYouMake(filteredStreams);
 
 } else {
 	content.textContent = `No streams found.`;
 }
-}
-			
+}		
 
 function streams10OrLess(filteredStreams) {
 	
-			const streamsData = filteredStreams;
-			const resultsPerPage = 50; // Number of results per page
-			let currentPage = 1;// Your stream data goes here
+	console.log(gameName, viewerCount, streamCount);
+	const resultsPerPage = 30; // Number of results per page
+	let currentPage = 1;
+	let streamsData = filteredStreams; // Your stream data goes here	
+	
+// Function to fetch followers for a user
+	async function fetchFollowers(userId, accessToken) {
+		try {
+			const response = await fetch(`${TWITCH_API_BASE_URL}/channels/followers?broadcaster_id=${userId}`, {
+				headers: {
+					'Client-ID': CLIENT_ID,
+					'Authorization': `Bearer ${accessToken}`,
+				},
+			});
+	
+			if (!response.ok) {
+				throw new Error(`Error fetching followers: ${response.statusText}`);
+			}
+	
+			const data = await response.json();
+			return data.total; // Return the total number of followers
+		} catch (error) {
+			console.error('An error occurred while fetching followers:', error);
+			return 0;
+		}
+	}	
+			
+			function updateFollowers() {
+				// Get the user IDs or usernames of the displayed streams
+				const streamers = streamsData
+					.slice((currentPage - 1) * resultsPerPage, currentPage * resultsPerPage)
+					.map(stream => stream.user_id);
+			
+				// Fetch and display followers for each streamer
+				streamers.forEach(async (userId, index) => {
+					const followers = await fetchFollowers(userId, accessToken);
+					// Update the corresponding table cell with the follower count
+					const followersCell = document.querySelector(`#search-result-list tr:nth-child(${index + 1}) td.followers`);
+					followersCell.textContent = followers;
+				});
+			}
+			
+			//const tableCaption = document.getElementById('stream-table-caption');
+			//tableCaption.textContent = `Showing ${gameName} streams. ${viewerCount} viewers in ${streamCount} streams.`;
 			
 			function renderTable() {
 				const startIndex = (currentPage - 1) * resultsPerPage;
 				const endIndex = startIndex + resultsPerPage;
 				const displayedStreams = streamsData.slice(startIndex, endIndex);
-
-				
+			
 				const tableBody = document.getElementById('search-result-list');
 				tableBody.innerHTML = '';
 			
 				displayedStreams.forEach((stream) => {
-					
 					const formattedTime = formatTimeDifference(stream.started_at);
 					const createdAt = reallyLongTimeAgo(stream.user.created_at);
 					const streamLink = `<a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a>`
@@ -513,7 +554,7 @@ function streams10OrLess(filteredStreams) {
 					const followersCell = row.insertCell(7);
 					const startedCell = row.insertCell(8);
 					const tagsCell = row.insertCell(9);
-			
+					
 					streamerCell.innerHTML = streamLink;
 					typeCell.innerHTML = stream.user.broadcaster_type;
 					ageCell.textContent = createdAt;
@@ -521,63 +562,50 @@ function streams10OrLess(filteredStreams) {
 					gameCell.textContent = stream.game_name;
 					matureCell.innerHTML = stream.is_mature;
 					viewersCell.textContent = stream.viewer_count;
-					followersCell.textContent = stream.follower_count;
+					followersCell.className = 'followers';
 					startedCell.textContent = formattedTime;
 					tagsCell.innerHTML = stream.tags;
-					// Update the format as needed					
+					// Update the format as needed		
 				});
 			}
 			
 			function updatePagination() {
-				const prevPageButton = document.getElementById('prevPage');
-				const nextPageButton = document.getElementById('nextPage');
-				const pageNumbers = document.getElementById('pageNumbers');
-				const pageButtonsContainer = document.getElementById('pageButtons');
+				const topPaginationContainer = document.getElementById('top-pagination-container');
+				topPaginationContainer.innerHTML = '';
 			
-				prevPageButton.disabled = currentPage === 1;
-				nextPageButton.disabled = currentPage * resultsPerPage >= streamsData.length;
+				const bottomPaginationContainer = document.getElementById('bottom-pagination-container');
+				bottomPaginationContainer.innerHTML = '';
 			
 				const totalPages = Math.ceil(streamsData.length / resultsPerPage);
-				//pageNumbers.textContent = `Page ${currentPage} of ${totalPages}`;
 			
-				// Clear the page number buttons container
-				pageButtonsContainer.innerHTML = '';
-			
-				// Generate page number buttons and add event listeners
 				for (let page = 1; page <= totalPages; page++) {
-					const pageButton = document.createElement('button');
-					pageButton.textContent = page;
-					pageButton.classList.add('btn', 'btn-primary'); // Bootstrap button classes
-					pageButton.addEventListener('click', () => {
+					const li = document.createElement('li');
+					li.className = 'page-item';
+			
+					const a = document.createElement('a');
+					a.className = 'page-link';
+					a.href = '#';
+					a.textContent = page;
+			
+					a.addEventListener('click', () => {
 						currentPage = page;
 						updatePagination();
 					});
-				
-					if (page === currentPage) {
-						pageButton.classList.add('active'); // Bootstrap active class
-					}
-				
-					pageButtonsContainer.appendChild(pageButton);
+			
+					li.appendChild(a);
+			
+					topPaginationContainer.appendChild(li.cloneNode(true)); // Clone the button for the top pagination
+					bottomPaginationContainer.appendChild(li); // Add the button to the bottom pagination
 				}
-				
+			
+				const currentButton = topPaginationContainer.getElementsByTagName('li')[currentPage - 1];
+				if (currentButton) {
+					currentButton.classList.add('active');
+				}
 			
 				renderTable();
+				updateFollowers();
 			}
-			
-			// Event listeners for pagination buttons
-			document.getElementById('prevPage').addEventListener('click', () => {
-				if (currentPage > 1) {
-					currentPage--;
-					updatePagination();
-				}
-			});
-			
-			document.getElementById('nextPage').addEventListener('click', () => {
-				if (currentPage * resultsPerPage < streamsData.length) {
-					currentPage++;
-					updatePagination();
-				}
-			});
 			
 			// Initial rendering of the table
 			updatePagination();
