@@ -1,0 +1,13 @@
+﻿<MudChipSet SelectedChipChanged="OnGameChanged" Filter="false" Mandatory="true">
+    @foreach (var category in Categories)
+    {
+        <MudTooltip>
+            <ChildContent>
+                <MudChip Value="@category.Id" Size="Size.Large" Variant="Variant.Text" SelectedColor="Color.Primary">@category.Name</MudChip>
+            </ChildContent>
+            <TooltipContent>
+                <MudImage Src="@category.BoxArtUrl" Alt="@category.Name" Elevation="25" Class="rounded-lg" />
+            </TooltipContent>
+        </MudTooltip>
+    }
+</MudChipSet>

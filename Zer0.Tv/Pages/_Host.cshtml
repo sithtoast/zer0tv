@@ -1,0 +1,10 @@
+﻿@page "/"
+@namespace Zer0.Tv.Pages
+@using Microsoft.AspNetCore.Authentication
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+    var accessToken = await HttpContext.GetTokenAsync("access_token");
+}
+
+<component type="typeof(App)" param-AccessToken="accessToken" render-mode="Server" />

@@ -1,0 +1,33 @@
+﻿<MudTable Items="@Streams">
+    <HeaderContent>
+        <MudTh>Streamer</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>Age</MudTh>
+        <MudTh>Title</MudTh>
+        <MudTh>Game</MudTh>
+        <MudTh>Mature</MudTh>
+        <MudTh>Viewers</MudTh>
+        <MudTh>Followers</MudTh>
+        <MudTh>Started</MudTh>
+        <MudTh>Tags</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Streamer">@context.UserName</MudTd>
+        <MudTd DataLabel="Type"></MudTd>
+        <MudTd DataLabel="Age"></MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Game">@context.GameName</MudTd>
+        <MudTd DataLabel="Mature">
+            <MudImage Src="@(context.IsMature ? "img/ratedm.png" : "img/ratede.png")" />
+        </MudTd>
+        <MudTd DataLabel="Viewers">@context.ViewerCount</MudTd>
+        <MudTd DataLabel="Followers"></MudTd>
+        <MudTd DataLabel="Started"></MudTd>
+        <MudTd DataLabel="Tags">
+            @foreach(var tag in context.Tags)
+            {
+                <MudChip Size="Size.Small">@tag</MudChip>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>

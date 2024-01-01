@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>Zer0.Tv</PageTitle>
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <AppBar SearchTextChanged="SearchTextChanged" />
+
+    <CascadingValue Value="SearchText">
+        <MudMainContent>
+            @Body
+        </MudMainContent>
+    </CascadingValue>
+</MudLayout>
+
+@code 
+{
+    public string? SearchText { get; set; }
+
+    private void SearchTextChanged(string? searchText)
+    {
+        SearchText = searchText;
+    }
+}

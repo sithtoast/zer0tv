@@ -1,0 +1,20 @@
+﻿<MudAppBar>
+	<MudText Typo="Typo.h5" Class="ml-3">zer0.tv</MudText>
+	<AuthorizeView>
+		<Authorized>
+			<MudTextField @bind-Value="SearchText" DebounceInterval=300 OnDebounceIntervalElapsed="OnSearchTextChanged" class="mud-theme-primary color-white" Placeholder="Search for a game or category"></MudTextField>
+		</Authorized>	
+	</AuthorizeView>
+	<MudSpacer />
+	<AuthorizeView>
+		<Authorized>
+			<MudText>Welcome @Username</MudText>
+			<form method="get" action="logout">
+				<MudButton class="mud-theme-primary" ButtonType="ButtonType.Submit">Log out</MudButton>
+			</form>
+		</Authorized>
+		<NotAuthorized>
+			<MudLink Class="mud-theme-primary" Href="login?redirectUri=/">Log in with Twitch</MudLink>
+		</NotAuthorized>
+	</AuthorizeView>
+</MudAppBar>

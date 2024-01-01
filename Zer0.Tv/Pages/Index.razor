@@ -1,0 +1,24 @@
+﻿@page "/"
+@using Zer0.Tv.Components
+
+<MudGrid Spacing="2">
+    <MudItem sm="3" Class="overflow-y-auto">
+        <TagCloud GameChanged="GameChanged" />
+    </MudItem>
+    <MudItem sm="4">
+        <StreamsGrid GameId="@GameId" />
+    </MudItem>
+    <MudItem sm="5">
+
+    </MudItem>
+</MudGrid>
+
+@code {
+    private string GameId { get; set; }
+
+    private void GameChanged(string gameId)
+    {
+        GameId = gameId;
+        StateHasChanged();
+    }
+}
