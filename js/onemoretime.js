@@ -449,9 +449,11 @@ function streamFilter(streams) {
 	howManyEyeballs(streams);
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 	if (filteredStreams.length > 0) {
-	console.log(filteredStreams);
+	//console.log(filteredStreams);
 	isMature(filteredStreams);
-	everyMoveYouMake(filteredStreams);
+	//everyMoveYouMake(filteredStreams);
+	isAffiliate(filteredStreams);
+	totalFollowers(filteredStreams);
 
 } else {
 	content.textContent = `No streams found.`;
@@ -736,9 +738,9 @@ async function everythingAboutYou (userIds, streams) {
 async function everythingAboutYourChannel (userIds, userMerged) {
 	  try {
 		const channelsInfo = await fetchChannelsInfo(userIds);
-		console.log(channelsInfo);
+		//console.log(channelsInfo);
 		const fullyMerged = await mergeChannels(userMerged, channelsInfo);
-		console.log(fullyMerged);
+		//console.log(fullyMerged);
 		streamFilter(fullyMerged);
 	  } catch (error) {
 		console.error('An error occurred:', error);
