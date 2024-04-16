@@ -4,6 +4,6 @@ function isAffiliate(filteredStreams) {
 }
 
 function totalFollowers(filteredStreams) {
-	const userFilteredStreams = filteredStreams.filter((filteredStreams) => filteredStreams.follower_count < 101);
-	console.log(userFilteredStreams);
+	const userFilteredFollows = filteredStreams.filter((stream) => stream.follower_count < 101);
+	console.log(userFilteredFollows);
 }

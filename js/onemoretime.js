@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:57673`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:53875`;
 
 
 // Twitch API Endpoints
@@ -451,9 +451,9 @@ function streamFilter(streams) {
 	if (filteredStreams.length > 0) {
 	//console.log(filteredStreams);
 	isMature(filteredStreams);
-	//everyMoveYouMake(filteredStreams);
+	everyMoveYouMake(filteredStreams);
 	isAffiliate(filteredStreams);
-	totalFollowers(filteredStreams);
+	
 
 } else {
 	content.textContent = `No streams found.`;
@@ -462,6 +462,7 @@ function streamFilter(streams) {
 
 function streams10OrLess(filteredStreams) {
 	
+	totalFollowers(filteredStreams);
 	console.log(gameName, viewerCount, streamCount);
 	const resultsPerPage = 30; // Number of results per page
 	let currentPage = 1;
@@ -693,6 +694,7 @@ function streams10OrLess(filteredStreams) {
 			
 				renderTable();
 				updateFollowers();
+				
 			}
 			
 			// Initial rendering of the table
