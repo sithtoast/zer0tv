@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
-const REDIRECT_URI = 'https://zer0.tv';
-//const REDIRECT_URI = `http://localhost:57673`;
+//const REDIRECT_URI = 'https://zer0.tv';
+const REDIRECT_URI = `http://localhost:53875`;
 
 
 // Twitch API Endpoints
@@ -449,9 +449,11 @@ function streamFilter(streams) {
 	howManyEyeballs(streams);
 	const filteredStreams = streams.filter((stream) => stream.viewer_count < 4);
 	if (filteredStreams.length > 0) {
-	console.log(filteredStreams);
+	//console.log(filteredStreams);
 	isMature(filteredStreams);
 	everyMoveYouMake(filteredStreams);
+	isAffiliate(filteredStreams);
+	
 
 } else {
 	content.textContent = `No streams found.`;
@@ -460,6 +462,7 @@ function streamFilter(streams) {
 
 function streams10OrLess(filteredStreams) {
 	
+	totalFollowers(filteredStreams);
 	console.log(gameName, viewerCount, streamCount);
 	const resultsPerPage = 30; // Number of results per page
 	let currentPage = 1;
@@ -691,6 +694,7 @@ function streams10OrLess(filteredStreams) {
 			
 				renderTable();
 				updateFollowers();
+				
 			}
 			
 			// Initial rendering of the table
@@ -736,9 +740,9 @@ async function everythingAboutYou (userIds, streams) {
 async function everythingAboutYourChannel (userIds, userMerged) {
 	  try {
 		const channelsInfo = await fetchChannelsInfo(userIds);
-		console.log(channelsInfo);
+		//console.log(channelsInfo);
 		const fullyMerged = await mergeChannels(userMerged, channelsInfo);
-		console.log(fullyMerged);
+		//console.log(fullyMerged);
 		streamFilter(fullyMerged);
 	  } catch (error) {
 		console.error('An error occurred:', error);
