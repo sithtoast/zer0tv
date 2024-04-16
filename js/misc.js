@@ -36,3 +36,16 @@ function reallyLongTimeAgo(created_at) {
 		return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
 	}
 }
+
+// Function to show the button if the table body is populated
+function showButtonIfNeeded() {
+  var button = document.getElementById('embedRandomStreamsAndChat');
+  if (document.getElementById('search-result-list').getElementsByTagName('tr').length > 0){
+	button.style.display = 'block';
+  } else {
+	button.style.display = 'none';
+  }
+}
+
+// Check initially if the table body is populated
+showButtonIfNeeded();

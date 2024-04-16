@@ -464,6 +464,10 @@ function streams10OrLess(filteredStreams) {
 	
 	totalFollowers(filteredStreams);
 	console.log(gameName, viewerCount, streamCount);
+	const criteriaMet = filteredStreams.length;
+	const tableCaption = document.getElementById('searchTerms');
+	tableCaption.innerHTML = `<h2>${gameName}</h2> ${viewerCount} viewers in ${streamCount} streams. (Give or Take) <br> ${criteriaMet} streams meet our criteria.`;
+	
 	const resultsPerPage = 30; // Number of results per page
 	let currentPage = 1;
 	let streamsData = filteredStreams; // Your stream data goes here	
@@ -591,9 +595,6 @@ function streams10OrLess(filteredStreams) {
 				});
 			}
 			
-			//const tableCaption = document.getElementById('stream-table-caption');
-			//tableCaption.textContent = `Showing ${gameName} streams. ${viewerCount} viewers in ${streamCount} streams.`;
-			
 			function renderTable() {
 				const startIndex = (currentPage - 1) * resultsPerPage;
 				const endIndex = startIndex + resultsPerPage;
@@ -637,17 +638,15 @@ function streams10OrLess(filteredStreams) {
 					const streamerCell = row.insertCell(0);
 					const ageCell = row.insertCell(1);
 					const titleCell = row.insertCell(2);
-					const gameCell = row.insertCell(3);
-					const matureCell = row.insertCell(4);
-					const viewersCell = row.insertCell(5);
-					const followersCell = row.insertCell(6);
-					const startedCell = row.insertCell(7);
-					const tagsCell = row.insertCell(8);
+					const matureCell = row.insertCell(3);
+					const viewersCell = row.insertCell(4);
+					const followersCell = row.insertCell(5);
+					const startedCell = row.insertCell(6);
+					const tagsCell = row.insertCell(7);
 					
 					streamerCell.innerHTML = stream.user.iconed_name;
 					ageCell.textContent = createdAt;
 					titleCell.textContent = stream.title;
-					gameCell.textContent = stream.game_name;
 					matureCell.innerHTML = stream.is_mature;
 					viewersCell.textContent = stream.viewer_count;
 					followersCell.className = 'followers';
@@ -658,8 +657,6 @@ function streams10OrLess(filteredStreams) {
 			}
 			
 			function updatePagination() {
-				const topPaginationContainer = document.getElementById('top-pagination-container');
-				topPaginationContainer.innerHTML = '';
 			
 				const bottomPaginationContainer = document.getElementById('bottom-pagination-container');
 				bottomPaginationContainer.innerHTML = '';
@@ -682,16 +679,16 @@ function streams10OrLess(filteredStreams) {
 			
 					li.appendChild(a);
 			
-					topPaginationContainer.appendChild(li.cloneNode(true)); // Clone the button for the top pagination
 					bottomPaginationContainer.appendChild(li); // Add the button to the bottom pagination
 				}
 			
-				const currentButton = topPaginationContainer.getElementsByTagName('li')[currentPage - 1];
+				const currentButton = bottomPaginationContainer.getElementsByTagName('li')[currentPage - 1];
 				if (currentButton) {
 					currentButton.classList.add('active');
 				}
 			
 				renderTable();
+				showButtonIfNeeded();
 				updateFollowers();
 				
 			}
