@@ -625,10 +625,10 @@ function streams10OrLess(filteredStreams) {
 					const partnerIcon = '<img src=img/partner.png alt="partner" title="Partner" width=16 height=16>';
 					const affiliateIcon = '<img src=img/bits.png alt="affiliate" title="Affiliate" width=16 height=16>';
 					if (stream.user.broadcaster_type === "partner") {
-						stream.user.iconed_name = streamLink + partnerIcon;
+						stream.user.iconed_name = stream.user_name + partnerIcon;
 					}
 					if (stream.user.broadcaster_type === "affiliate") {
-						stream.user.iconed_name = streamLink + affiliateIcon;
+						stream.user.iconed_name = stream.user_name + affiliateIcon;
 					}
 					else stream.user.iconed_name = streamLink + "";
 					
