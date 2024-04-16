@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:53875`;
+const REDIRECT_URI = `http://localhost:64449`;
 
 
 // Twitch API Endpoints
@@ -161,6 +161,7 @@ async function fetchCategories() {
 					actuallyFetch(category.id);
 				});
 				categoryList.appendChild(listItem);
+				showTopIfNeeded();
 			});
 		} else {
 			content.textContent = 'Error fetching categories. Try logging in?';
@@ -192,27 +193,35 @@ async function searchCategories(categoryName) {
 				// Clear the existing category search results
 				categorySearchResultList.innerHTML = '';
 				categories.forEach((category) => {
-						const boxArtDiv = document.createElement('div');
-					
-
+						const searchTag = document.createElement('span');
+						searchTag.classList.add('badge', 'badge-warning', 'mr-2');
+						searchTag.textContent = category.name;
+						
+						const popoverDiv = document.createElement('div');
+						popoverDiv.classList.add('popover');
+						
 						let boxArt = category.box_art_url;
-						const boxArtImage = document.createElement('img');
+						 const boxArtImage = document.createElement('img');
 						boxArtImage.src = boxArt.replace('52x72', '150x220');
 						boxArtImage.title = `${category.name}`;
+						
 					
-					boxArtImage.addEventListener('click', () => {
+					searchTag.addEventListener('click', () => {
 						// When a category is clicked, fetch streams in that category
 						//fetchStreams(category.id, category.name);
 						actuallyFetch(category.id);
 					});
 					
-					boxArtDiv.appendChild(boxArtImage);
-					categorySearchResultList.appendChild(boxArtDiv);
+					categorySearchResultList.appendChild(searchTag);
+					
+					
+					// categorySearchResultList.appendChild(boxArtDiv);
 				});
 				
 
 				// Display the category search results container
 				categorySearchResults.style.display = 'block';
+				showSearchIfNeeded();
 			} else {
 				categorySearchResultList.textContent = 'No matching categories found.';
 				categorySearchResults.style.display = 'block';
@@ -687,8 +696,10 @@ function streams10OrLess(filteredStreams) {
 					currentButton.classList.add('active');
 				}
 			
+				
 				renderTable();
 				showButtonIfNeeded();
+				showTableifNeeded();
 				updateFollowers();
 				
 			}
