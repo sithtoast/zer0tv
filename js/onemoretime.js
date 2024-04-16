@@ -464,6 +464,10 @@ function streams10OrLess(filteredStreams) {
 	
 	totalFollowers(filteredStreams);
 	console.log(gameName, viewerCount, streamCount);
+	const criteriaMet = filteredStreams.length;
+	const tableCaption = document.getElementById('searchTerms');
+	tableCaption.innerHTML = `<h2>${gameName}</h2> ${viewerCount} viewers in ${streamCount} streams. (Give or Take) <br> ${criteriaMet} streams meet our criteria.`;
+	
 	const resultsPerPage = 30; // Number of results per page
 	let currentPage = 1;
 	let streamsData = filteredStreams; // Your stream data goes here	
@@ -590,9 +594,6 @@ function streams10OrLess(filteredStreams) {
 					followersCell.textContent = followers;
 				});
 			}
-			
-			//const tableCaption = document.getElementById('stream-table-caption');
-			//tableCaption.textContent = `Showing ${gameName} streams. ${viewerCount} viewers in ${streamCount} streams.`;
 			
 			function renderTable() {
 				const startIndex = (currentPage - 1) * resultsPerPage;
