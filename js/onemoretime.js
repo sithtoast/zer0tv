@@ -638,17 +638,15 @@ function streams10OrLess(filteredStreams) {
 					const streamerCell = row.insertCell(0);
 					const ageCell = row.insertCell(1);
 					const titleCell = row.insertCell(2);
-					const gameCell = row.insertCell(3);
-					const matureCell = row.insertCell(4);
-					const viewersCell = row.insertCell(5);
-					const followersCell = row.insertCell(6);
-					const startedCell = row.insertCell(7);
-					const tagsCell = row.insertCell(8);
+					const matureCell = row.insertCell(3);
+					const viewersCell = row.insertCell(4);
+					const followersCell = row.insertCell(5);
+					const startedCell = row.insertCell(6);
+					const tagsCell = row.insertCell(7);
 					
 					streamerCell.innerHTML = stream.user.iconed_name;
 					ageCell.textContent = createdAt;
 					titleCell.textContent = stream.title;
-					gameCell.textContent = stream.game_name;
 					matureCell.innerHTML = stream.is_mature;
 					viewersCell.textContent = stream.viewer_count;
 					followersCell.className = 'followers';
