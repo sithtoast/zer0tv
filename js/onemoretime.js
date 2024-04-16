@@ -630,7 +630,7 @@ function streams10OrLess(filteredStreams) {
 					if (stream.user.broadcaster_type === "affiliate") {
 						stream.user.iconed_name = stream.user_name + affiliateIcon;
 					}
-					else stream.user.iconed_name = streamLink + "";
+					else stream.user.iconed_name = stream.user_name + "";
 					
 					// Create and append rows for the displayed streams
 					const row = tableBody.insertRow();
