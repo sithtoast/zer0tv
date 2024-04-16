@@ -657,8 +657,6 @@ function streams10OrLess(filteredStreams) {
 			}
 			
 			function updatePagination() {
-				const topPaginationContainer = document.getElementById('top-pagination-container');
-				topPaginationContainer.innerHTML = '';
 			
 				const bottomPaginationContainer = document.getElementById('bottom-pagination-container');
 				bottomPaginationContainer.innerHTML = '';
@@ -681,16 +679,16 @@ function streams10OrLess(filteredStreams) {
 			
 					li.appendChild(a);
 			
-					topPaginationContainer.appendChild(li.cloneNode(true)); // Clone the button for the top pagination
 					bottomPaginationContainer.appendChild(li); // Add the button to the bottom pagination
 				}
 			
-				const currentButton = topPaginationContainer.getElementsByTagName('li')[currentPage - 1];
+				const currentButton = bottomPaginationContainer.getElementsByTagName('li')[currentPage - 1];
 				if (currentButton) {
 					currentButton.classList.add('active');
 				}
 			
 				renderTable();
+				showButtonIfNeeded();
 				updateFollowers();
 				
 			}

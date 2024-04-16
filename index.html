@@ -70,46 +70,37 @@
 </div>
 </div>
 
-<!-- Add a container for pagination controls at the top -->
-<div class="container mt-4">
-	<!-- Bootstrap pagination at the top -->
-	<nav>
-		<ul class="pagination justify-content-end" id="top-pagination-container">
-			<!-- Pagination buttons will be added here -->
-		</ul>
-	</nav>
-</div>
 
 <div class="container mt-4">
-<div class="container mt-4">
-	<button id="embedRandomStreamsAndChat" class="btn btn-primary">Embed 3 Random Streams with Chat</button>
-	<div class="table-responsive p-3">
-		<table>
-		<tr>
-			<td colspan="9" id="searchTerms"></td>
-		</tr>		
-		</table>
-		
-		<table class="table table-bordered table-hover">
-			
-			<!-- Table header -->
-			<thead class="thead-dark">
+	<button id="embedRandomStreamsAndChat" class="btn btn-primary" style="display: none;">Embed 3 Random Streams with Chat</button>
+	<div class="container mt-4">
+	
+		<div class="table-responsive p-3">
+			<table>
 				<tr>
-				<th>Streamer</th>
-				<th>Age</th>
-				<th>Title</th>
-				<th>Mature</th>
-				<th>Viewers</th>
-				<th>Followers</th>
-				<th>Started</th>
-				<th>Tags</th>
-				</tr>
-			</thead>
+				<td id="searchTerms"></td>
+				</tr>		
+			</table>
+		
+			<table class="table table-bordered table-hover">
+			<!-- Table header -->
+				<thead class="thead-dark">
+					<tr>
+					<th>Streamer</th>
+					<th>Age</th>
+					<th>Title</th>
+					<th>Mature</th>
+					<th>Viewers</th>
+					<th>Followers</th>
+					<th>Started</th>
+					<th>Tags</th>
+					</tr>
+					</thead>
 			<!-- Table body -->
-			<tbody id="search-result-list">
+				<tbody id="search-result-list">
 				<!-- Table rows will be dynamically added here -->
-			</tbody>
-		</table>
+				</tbody>
+			</table>
 	</div>
 </div>
 
@@ -122,8 +113,6 @@
 		</ul>
 	</nav>
 </div>
-
-<div id="random-streams-and-chat-container" class="mt-4">
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
