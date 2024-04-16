@@ -623,29 +623,28 @@ function streams10OrLess(filteredStreams) {
 					// puts bits icon or twitch logo for affilate/partner
 					
 					const partnerIcon = '<img src=img/partner.png alt="partner">';
-					const affiliateIcon = '<img src=img/bits.png alt=affiliate>';
+					const affiliateIcon = '<img src=img/bits.png alt="affiliate">';
 					if (stream.user.broadcaster_type === "partner") {
-						stream.user.broadcaster_type = partnerIcon;
+						stream.user.iconed_name = streamLink + partnerIcon;
 					}
 					if (stream.user.broadcaster_type === "affiliate") {
-						stream.user.broadcaster_type = affiliateIcon;
+						stream.user.iconed_name = streamLink + affiliateIcon;
 					}
+					else stream.user.iconed_name = streamLink + "";
 					
 					// Create and append rows for the displayed streams
 					const row = tableBody.insertRow();
 					const streamerCell = row.insertCell(0);
-					const typeCell = row.insertCell(1);
-					const ageCell = row.insertCell(2);
-					const titleCell = row.insertCell(3);
-					const gameCell = row.insertCell(4);
-					const matureCell = row.insertCell(5);
-					const viewersCell = row.insertCell(6);
-					const followersCell = row.insertCell(7);
-					const startedCell = row.insertCell(8);
-					const tagsCell = row.insertCell(9);
+					const ageCell = row.insertCell(1);
+					const titleCell = row.insertCell(2);
+					const gameCell = row.insertCell(3);
+					const matureCell = row.insertCell(4);
+					const viewersCell = row.insertCell(5);
+					const followersCell = row.insertCell(6);
+					const startedCell = row.insertCell(7);
+					const tagsCell = row.insertCell(8);
 					
-					streamerCell.innerHTML = streamLink;
-					typeCell.innerHTML = stream.user.broadcaster_type;
+					streamerCell.innerHTML = stream.user.iconed_name;
 					ageCell.textContent = createdAt;
 					titleCell.textContent = stream.title;
 					gameCell.textContent = stream.game_name;
