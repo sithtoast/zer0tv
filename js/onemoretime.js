@@ -1,7 +1,7 @@
 // Your Twitch application credentials
 const CLIENT_ID = 'o5n16enllu8dztrwc6yk15ncrxdcvc';
 //const REDIRECT_URI = 'https://zer0.tv';
-const REDIRECT_URI = `http://localhost:64449`;
+const REDIRECT_URI = `http://localhost:53875`;
 
 
 // Twitch API Endpoints
@@ -399,6 +399,7 @@ function mergeChannels(streams, channelDeets) {
    return mergedData;
  }
 
+
 // Number of followers each channel has
 function everyMoveYouMake(streams) {
 	const headers = {
@@ -415,8 +416,8 @@ function everyMoveYouMake(streams) {
 		method: 'GET',
 		headers,
 		success: (response) => {
-			const channelDeets = response.total;
-			streams[i].follower_count = channelDeets;
+			const followerDeets = response.total;
+			streams[i].follower_count = followerDeets;
 
 		},
 		error: (error) => {
@@ -425,7 +426,7 @@ function everyMoveYouMake(streams) {
 		});
 		promises.push(promise);
 	}
-	$.when.apply($, promises).done(() => { 	streams10OrLess(streams); });
+	$.when.apply($, promises).done(() => { 	totalFollowers(streams); });
 }
 
 // Total number of viewers for retrieved streams
@@ -460,8 +461,10 @@ function streamFilter(streams) {
 	if (filteredStreams.length > 0) {
 	//console.log(filteredStreams);
 	isMature(filteredStreams);
-	everyMoveYouMake(filteredStreams);
 	isAffiliate(filteredStreams);
+	streams10OrLess(filteredStreams);
+	//everyMoveYouMake(filteredStreams);
+	
 	
 
 } else {
@@ -471,7 +474,7 @@ function streamFilter(streams) {
 
 function streams10OrLess(filteredStreams) {
 	
-	totalFollowers(filteredStreams);
+	
 	console.log(gameName, viewerCount, streamCount);
 	const criteriaMet = filteredStreams.length;
 	const tableCaption = document.getElementById('searchTerms');
@@ -602,6 +605,7 @@ function streams10OrLess(filteredStreams) {
 					const followersCell = document.querySelector(`#search-result-list tr:nth-child(${index + 1}) td.followers`);
 					followersCell.textContent = followers;
 				});
+				totalFollowers(filteredStreams);
 			}
 			
 			function renderTable() {
