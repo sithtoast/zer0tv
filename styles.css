@@ -90,6 +90,30 @@ h1 {
 	background-color: #0077cc;
 }
 
+.categorySearch-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px; /* Adjust the spacing between pills */
+	justify-content: center;
+	align-items: center;
+}
+
+.categorySearch-pills span {
+	display: inline-block;
+	padding: 8px 12px;
+	background-color: #8a00ff;
+	color: #fff;
+	border-radius: 20px; /* Rounded corners for pills */
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.categorySearch-pills span:hover {
+	background-color: #0077cc;
+}
+
+
 #content {
 	max-height: 750px; /* Adjust the maximum height as needed */
 	overflow-y: auto; /* Enable vertical scrolling if content exceeds the maximum height */
@@ -116,4 +140,18 @@ h1 {
 	height: 90%;
 	display: inline-block;
 	zoom: 1;
+}
+
+.popover {
+  position: absolute;
+  background-color: white;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+.result:hover .popover {
+  display: block;
 }

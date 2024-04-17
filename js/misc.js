@@ -49,3 +49,37 @@ function showButtonIfNeeded() {
 
 // Check initially if the table body is populated
 showButtonIfNeeded();
+
+
+function showTopIfNeeded() {
+	var topFifty = document.getElementById('categories');
+	if (document.getElementById('category-list').getElementsByTagName('span').length > 0){
+		topFifty.style.display = 'block';
+	} else {
+		topFifty.style.display = 'none';
+	}
+}
+
+showTopIfNeeded();
+
+function showSearchIfNeeded() {
+	var search = document.getElementById('category-search-results');
+	if (document.getElementById('category-search-result-list').getElementsByTagName('span').length > 0){
+		search.style.display = 'block';
+	} else {
+		search.style.display = 'none';
+	}
+}
+
+showSearchIfNeeded();
+
+function showTableifNeeded() {
+	var table = document.getElementById('theTable');
+	if (document.getElementById('search-result-list').getElementsByTagName('tr').length > 0){
+		table.style.display = 'block';
+	} else {
+		table.style.display = 'none';
+	}
+}
+
+showTableifNeeded();
