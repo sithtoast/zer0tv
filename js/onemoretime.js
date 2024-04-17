@@ -193,6 +193,9 @@ async function searchCategories(categoryName) {
 				// Clear the existing category search results
 				categorySearchResultList.innerHTML = '';
 				categories.forEach((category) => {
+						const resultDiv = document.createElement('div');
+						resultDiv.classList.add('categoryResult');
+						
 						const searchTag = document.createElement('span');
 						searchTag.classList.add('badge', 'badge-warning', 'mr-2');
 						searchTag.textContent = category.name;
@@ -212,7 +215,14 @@ async function searchCategories(categoryName) {
 						actuallyFetch(category.id);
 					});
 					
-					categorySearchResultList.appendChild(searchTag);
+					popoverDiv.appendChild(boxArtImage);
+					
+					resultDiv.appendChild(searchTag);
+					resultDiv.appendChild(popoverDiv);
+					
+					categorySearchResultList.appendChild(resultDiv);
+					
+					//categorySearchResultList.appendChild(searchTag);
 					
 					
 					// categorySearchResultList.appendChild(boxArtDiv);
