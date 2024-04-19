@@ -713,7 +713,6 @@ function streams10OrLess(filteredStreams) {
 				renderCards();
 				showButtonIfNeeded();
 				showTableifNeeded();
-				updateFollowers();
 				
 			}
 			
