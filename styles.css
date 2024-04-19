@@ -141,17 +141,3 @@ h1 {
 	display: inline-block;
 	zoom: 1;
 }
-
-.popover {
-  position: absolute;
-  background-color: white;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  display: none;
-}
-
-.result:hover .popover {
-  display: block;
-}
