@@ -592,34 +592,34 @@ function streams10OrLess(filteredStreams) {
 		}
 	}	
 			
-			function updateFollowers() {
-				// Get the user IDs or usernames of the displayed streams
-				const streamers = streamsData
-					.slice((currentPage - 1) * resultsPerPage, currentPage * resultsPerPage)
-					.map(stream => stream.user_id);
 			
-				// Fetch and display followers for each streamer
-				streamers.forEach(async (userId, index) => {
-					const followers = await fetchFollowers(userId, accessToken);
-					// Update the corresponding table cell with the follower count
-					const followersCell = document.querySelector(`#search-result-list tr:nth-child(${index + 1}) td.followers`);
-					followersCell.textContent = followers;
-				});
-				totalFollowers(filteredStreams);
-			}
-			
-			function renderTable() {
+			async function renderCards() {
 				const startIndex = (currentPage - 1) * resultsPerPage;
 				const endIndex = startIndex + resultsPerPage;
 				const displayedStreams = streamsData.slice(startIndex, endIndex);
-			
-				const tableBody = document.getElementById('search-result-list');
-				tableBody.innerHTML = '';
-			
-				displayedStreams.forEach((stream) => {
+				
+				const cardBody = document.getElementById('card-search');
+				cardBody.innerHTML = '';
+				
+				if (displayedStreams.length === 0) {
+					const noStreamMessage = document.createElement('div');
+					noStreamMessage.textContent = 'No streams found.';
+					cardBody.appendChild(noStreamMessage);
+					return; // Exit the function if no streams are found
+				}
+				
+				let row = document.createElement('div');
+				row.classList.add('row');
+				
+				for (let index = 0; index < displayedStreams.length; index++) {
+					
+					
+					const stream = displayedStreams[index];
 					const formattedTime = formatTimeDifference(stream.started_at);
 					const createdAt = reallyLongTimeAgo(stream.user.created_at);
 					const streamLink = `<a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a>`
+					
+					const followers = await fetchFollowers(stream.user_id, accessToken);
 					
 					//makes tags into badges
 					
@@ -636,6 +636,7 @@ function streams10OrLess(filteredStreams) {
 					
 					// puts bits icon or twitch logo for affilate/partner
 					
+									
 					const partnerIcon = '<img src=img/partner.png alt="partner" title="Partner" width=16 height=16>';
 					const affiliateIcon = '<img src=img/bits.png alt="affiliate" title="Affiliate" width=16 height=16>';
 					if (stream.user.broadcaster_type === "partner") {
@@ -646,27 +647,34 @@ function streams10OrLess(filteredStreams) {
 					}
 					else stream.user.iconed_name = stream.user_name + "";
 					
-					// Create and append rows for the displayed streams
-					const row = tableBody.insertRow();
-					const streamerCell = row.insertCell(0);
-					const ageCell = row.insertCell(1);
-					const titleCell = row.insertCell(2);
-					const matureCell = row.insertCell(3);
-					const viewersCell = row.insertCell(4);
-					const followersCell = row.insertCell(5);
-					const startedCell = row.insertCell(6);
-					const tagsCell = row.insertCell(7);
-					
-					streamerCell.innerHTML = stream.user.iconed_name;
-					ageCell.textContent = createdAt;
-					titleCell.textContent = stream.title;
-					matureCell.innerHTML = stream.is_mature;
-					viewersCell.textContent = stream.viewer_count;
-					followersCell.className = 'followers';
-					startedCell.textContent = formattedTime;
-					tagsCell.innerHTML = stream.tags;
-					// Update the format as needed		
-				});
+					const card = `
+					  <div class="col-md-4 mb-4">
+						<div class="card h-100">
+						  <img src="${stream.thumbnail_url.replace('{width}', '320').replace('{height}', '180')}" class="card-img-top" alt="Thumbnail">
+						  <div class="card-body">
+							<h5 class="card-title">${stream.user.iconed_name}</h5>
+							<p class="card-text">${stream.title}</p>
+							<a href="https://twitch.tv/${stream.user_name}" class="btn btn-primary" target="_blank">Watch</a>
+						  </div>
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">Followers: ${followers}</li>
+							<li class="list-group-item">Viewer count: ${stream.viewer_count}</li>
+							<li class="list-group-item">${stream.tags}</li>
+							<li class="list-group-item">Joined: ${createdAt} <br>Started: ${formattedTime}</li>
+							<div class="card-footer text-body-secondary"><p align="right">${stream.is_mature}</p></div>
+						  </ul>
+						</div>
+					  </div>
+					`;
+					row.innerHTML += card;
+					// Check if 3 cards are added or it's the last card
+					if ((index + 1) % 3 === 0 || index === displayedStreams.length - 1) {
+						cardBody.appendChild(row);
+						// Start a new row
+						row = document.createElement('div');
+						row.classList.add('row');
+					}
+				}
 			}
 			
 			function updatePagination() {
@@ -701,7 +709,8 @@ function streams10OrLess(filteredStreams) {
 				}
 			
 				
-				renderTable();
+				
+				renderCards();
 				showButtonIfNeeded();
 				showTableifNeeded();
 				updateFollowers();
@@ -759,3 +768,9 @@ async function everythingAboutYourChannel (userIds, userMerged) {
 		console.error('An error occurred:', error);
 	  }
 	}
+		
+	const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+	const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+	
+	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

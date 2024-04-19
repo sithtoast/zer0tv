@@ -74,7 +74,9 @@
 
 
 <div class="container mt-4">
-	<button id="embedRandomStreamsAndChat" class="btn btn-primary" style="display: none; float: right;">I'm Feeling Lucky</button>
+	<button id="embedRandomStreamsAndChat" data-bs-toggle="popover" data-bs-trigger="hover"
+	data-bs-placement="top" title="What?"
+	data-bs-content="This will embed three random streams from below." class="btn btn-primary" style="display: none; float: right;">I'm Feeling Lucky</button>
 	<div class=d-flex justify-content-evenly mb-3">
 		<div class=p2></div>
 	
@@ -82,7 +84,7 @@
 			<table>
 				<tr>
 				<td id="searchTerms"></td>
-				</tr>		
+				</tr>	
 			</table>
 		
 			<table class="table table-bordered table-hover" id="theTable">
@@ -117,6 +119,11 @@
 	</nav>
 </div>
 
+<!-- Cards -->
+<div class="container mt-4" id="card-search">
+
+</div>
+
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -147,12 +154,5 @@
 	<script src="js/onemoretime.js"></script>
 	<script src="js/filter.js"></script>
 	<script src="js/misc.js"></script>
-	<script>
-	const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-	const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
-	
-	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-	</script>
 </body>
 </html>
