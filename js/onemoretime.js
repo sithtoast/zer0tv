@@ -26,9 +26,11 @@ const userInfo = document.getElementById('user-info'); // Add an element for use
 const userLogin = document.getElementById('user-login'); // Add an element to display user login
 const userProfileImage = document.getElementById('profile-image'); // Add an element for the profile image
 
+
 let streamCount = 0;
 let viewerCount = 0;
 let gameName = "";
+let fixedBoxArt = "";
 
 // Event listener for the login button
 loginButton.addEventListener('click', () => {
@@ -158,6 +160,10 @@ async function fetchCategories() {
 				listItem.addEventListener('click', () => {
 					// When a category is clicked, fetch streams in that category
 					//fetchStreams(category.id, category.name);
+					boxArt = category.box_art_url;
+					fixedBoxArt = boxArt.replace('{width}x{height}', '150x220');
+					
+					console.log(fixedBoxArt);
 					actuallyFetch(category.id);
 				});
 				categoryList.appendChild(listItem);
@@ -200,7 +206,7 @@ async function searchCategories(categoryName) {
 						const popoverDiv = document.createElement('div');
 						popoverDiv.classList.add('popover');
 						
-						let boxArt = category.box_art_url;
+						boxArt = category.box_art_url;
 						 const boxArtImage = document.createElement('img');
 						boxArtImage.src = boxArt.replace('52x72', '150x220');
 						boxArtImage.title = `${category.name}`;
@@ -209,6 +215,9 @@ async function searchCategories(categoryName) {
 					searchTag.addEventListener('click', () => {
 						// When a category is clicked, fetch streams in that category
 						//fetchStreams(category.id, category.name);
+						boxArt = category.box_art_url;
+						fixedBoxArt = boxArt.replace('52x72', '150x220');
+						console.log(fixedBoxArt);
 						actuallyFetch(category.id);
 					});
 					
@@ -477,8 +486,10 @@ function streams10OrLess(filteredStreams) {
 	
 	console.log(gameName, viewerCount, streamCount);
 	const criteriaMet = filteredStreams.length;
-	const tableCaption = document.getElementById('searchTerms');
-	tableCaption.innerHTML = `<h2>${gameName}</h2> ${viewerCount} viewers in ${streamCount} streams. (Give or Take) <br> ${criteriaMet} streams meet our criteria.`;
+	const tableCaption = document.getElementById('boxArtCell');
+	const gameTerms = document.getElementById('searchTerms');
+	tableCaption.innerHTML = `<img align="left" src=${fixedBoxArt}>`;
+	gameTerms.innerHTML = `<h2>${gameName}</h2> ${viewerCount} viewers in ${streamCount} streams. (Give or Take) <br> ${criteriaMet} streams meet our criteria.`;
 	
 	const resultsPerPage = 30; // Number of results per page
 	let currentPage = 1;
