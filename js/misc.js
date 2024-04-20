@@ -37,20 +37,6 @@ function reallyLongTimeAgo(created_at) {
 	}
 }
 
-// Function to show the button if the table body is populated
-function showButtonIfNeeded() {
-  var button = document.getElementById('embedRandomStreamsAndChat');
-  if (document.getElementById('search-result-list').getElementsByTagName('tr').length > 0){
-	button.style.display = 'block';
-  } else {
-	button.style.display = 'none';
-  }
-}
-
-// Check initially if the table body is populated
-showButtonIfNeeded();
-
-
 function showTopIfNeeded() {
 	var topFifty = document.getElementById('categories');
 	if (document.getElementById('category-list').getElementsByTagName('span').length > 0){

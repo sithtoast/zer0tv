@@ -663,7 +663,7 @@ function streams10OrLess(filteredStreams) {
 					
 					const card = `
 					  <div class="col-md-4 mb-4">
-						<div class="card h-100">
+						<div class="card h-100" id=card-${index}>
 						  <img src="${stream.thumbnail_url.replace('{width}', '320').replace('{height}', '180')}" class="card-img-top" alt="Thumbnail">
 						  <div class="card-body">
 							<h5 class="card-title">${iconedName}</h5>
@@ -681,6 +681,13 @@ function streams10OrLess(filteredStreams) {
 					  </div>
 					`;
 					row.innerHTML += card;
+					
+					// Add event listener to each card
+					const cardElement = row.querySelector('.card:last-child');
+					cardElement.addEventListener('click', () => {
+						embedStreamAndChat(stream);
+					});
+					
 					// Check if 3 cards are added or it's the last card
 					if ((index + 1) % 3 === 0 || index === displayedStreams.length - 1) {
 						cardBody.appendChild(row);
@@ -689,6 +696,7 @@ function streams10OrLess(filteredStreams) {
 						row.classList.add('row');
 					}
 				}
+			document.getElementById('embedRandomStreamsAndChat').style.display = 'block';
 			}
 			
 			function updatePagination() {
@@ -725,7 +733,6 @@ function streams10OrLess(filteredStreams) {
 				
 				
 				renderCards();
-				showButtonIfNeeded();
 				showTableifNeeded();
 				
 			}
