@@ -629,6 +629,7 @@ function streams10OrLess(filteredStreams) {
 					const formattedTime = formatTimeDifference(stream.started_at);
 					const createdAt = reallyLongTimeAgo(stream.user.created_at);
 					const streamLink = `<a href="https://www.twitch.tv/${stream.user_name}" target="_blank">${stream.user_name}</a>`
+					const profilePic = `<img src=${stream.user.profile_image_url.replace('300x300', '70x70')} class="rounded-circle">`
 					
 					const followers = await fetchFollowers(stream.user_id, accessToken);
 					
@@ -658,12 +659,14 @@ function streams10OrLess(filteredStreams) {
 					}
 					else stream.user.iconed_name = stream.user_name + "";
 					
+					const iconedName = profilePic + stream.user.iconed_name;
+					
 					const card = `
 					  <div class="col-md-4 mb-4">
 						<div class="card h-100">
 						  <img src="${stream.thumbnail_url.replace('{width}', '320').replace('{height}', '180')}" class="card-img-top" alt="Thumbnail">
 						  <div class="card-body">
-							<h5 class="card-title">${stream.user.iconed_name}</h5>
+							<h5 class="card-title">${iconedName}</h5>
 							<p class="card-text">${stream.title}</p>
 							<a href="https://twitch.tv/${stream.user_name}" class="btn btn-primary" target="_blank">Watch</a>
 						  </div>
